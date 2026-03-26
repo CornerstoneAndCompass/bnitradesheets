@@ -1316,11 +1316,32 @@
       ];
 
       // Render one member row for inside pages
+      // Get designation colors for a member row number (1-based)
+      const getDesignation = (num) => {
+        const pt = parseInt(frontCover.presenting_today);
+        const gm = parseInt(frontCover.golden_mic);
+        const imn = parseInt(frontCover.im_new);
+        if (num === pt) return {type:'presenting_today', bg:'#FFF176', reqBg:'#FFF9C4'};
+        if (num === gm) return {type:'golden_mic', bg:'#FFD54F', reqBg:'#FFECB3'};
+        if (num === imn) return {type:'im_new', bg:'#C8E6C9', reqBg:'#E8F5E9'};
+        return null;
+      };
+
       const MemberRow = ({ r, num, empty, specialMessage }) => {
         const hasRole = r && r.role && r.role !== 'member';
-        // Alternating colors: role rows get pink tint, others alternate white/light grey
-        const dataBg = hasRole ? '#F5E0E0' : (num % 2 === 0 ? '#f5f5f5' : 'white');
-        const reqBg = hasRole ? '#FAF0F0' : (num % 2 === 0 ? '#fafafa' : 'white');
+        const designation = getDesignation(num);
+        // Row colors: designation > role-based pink > alternating white/pink
+        let dataBg, reqBg;
+        if (designation) {
+          dataBg = designation.bg;
+          reqBg = designation.reqBg;
+        } else if (hasRole) {
+          dataBg = '#F5E0E0';
+          reqBg = '#FAF0F0';
+        } else {
+          dataBg = num % 2 === 0 ? '#F5E0E0' : 'white';
+          reqBg = num % 2 === 0 ? '#FAF0F0' : 'white';
+        }
         return (
           <tr>
             <td className="rc-num" style={{background: empty ? 'white' : dataBg}}>{num}</td>
@@ -1587,18 +1608,32 @@
                             </thead>
                             <tbody>{buildRefPage(leftRefs, 1)}</tbody>
                           </table>
-                          {/* Decorative overlay text - solid colors matching PDF */}
-                          <div style={{position:'absolute', right:0, top:24, width:'26%', height:'calc(100% - 24px)', display:'flex', flexDirection:'column', pointerEvents:'none'}}>
-                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:28, fontWeight:800, color:'var(--bni-red)', textAlign:'center', lineHeight:1.05, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Presenting<br/>Today</div>
-                            </div>
-                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:30, fontWeight:800, color:'#C5A55A', textAlign:'center', lineHeight:1.05, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Golden<br/>Mic</div>
-                            </div>
-                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:24, color:'var(--bni-red)', fontWeight:800, textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>I'm new<br/>book at 121</div>
-                            </div>
-                          </div>
+                          {/* Decorative overlay text - positioned by designated member rows */}
+                          {(() => {
+                            const rowH = 100 / PER_PAGE; // percentage height per row
+                            const headerH = 24; // header row height in px
+                            const overlays = [
+                              {key:'presenting_today', label:'Presenting\nToday', color:'var(--bni-red)', size:28},
+                              {key:'golden_mic', label:'Golden\nMic', color:'#C5A55A', size:30},
+                              {key:'im_new', label:"I'm new\nbook at 121", color:'var(--bni-red)', size:24}
+                            ];
+                            // Default positions (percentage from top) if no member assigned
+                            const defaults = [25, 50, 75];
+                            return (
+                              <div style={{position:'absolute', right:0, top:headerH, width:'26%', height:`calc(100% - ${headerH}px)`, pointerEvents:'none'}}>
+                                {overlays.map((o, idx) => {
+                                  const memberNum = parseInt(frontCover[o.key]);
+                                  // Position at the member's row, or default spread
+                                  const topPct = memberNum ? ((memberNum - 1) * rowH) + (rowH * 0.5) : defaults[idx];
+                                  return (
+                                    <div key={o.key} style={{position:'absolute', top:`${topPct}%`, left:0, right:0, transform:'translateY(-50%)', display:'flex', alignItems:'center', justifyContent:'center', padding:'8px 0'}}>
+                                      <div style={{fontSize:o.size, fontWeight:900, color:o.color, textAlign:'center', lineHeight:1.05, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.9, whiteSpace:'pre-line'}}>{o.label}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className="ts-foot" style={{padding:'4px 8px', fontSize:11, fontStyle:'normal', fontWeight:700}}>Writing it down makes you 42% more likely to bring a referral</div>
                       </div>
@@ -1871,6 +1906,26 @@
                           <button className="btn btn-primary btn-sm" onClick={addReferral} disabled={members.length===0} style={{fontSize:11, padding:'5px 10px'}}>{Icons.plus} Add</button>
                         </div>
                       </div>
+
+                      {/* Member Designations */}
+                      <div style={{background:'#FFF9E6', border:'1px solid #E5D9A8', borderRadius:6, padding:8, marginBottom:10}}>
+                        <div style={{fontSize:11, fontWeight:700, marginBottom:6, color:'#333'}}>Member Designations</div>
+                        {[
+                          {key:'presenting_today', label:'Presenting Today', color:'#FFF176'},
+                          {key:'golden_mic', label:'Golden Mic', color:'#FFD54F'},
+                          {key:'im_new', label:"I'm New - Book a 1-2-1", color:'#C8E6C9'}
+                        ].map(d => (
+                          <div key={d.key} style={{display:'flex', alignItems:'center', gap:6, marginBottom:4}}>
+                            <div style={{width:10, height:10, borderRadius:2, background:d.color, border:'1px solid #ccc', flexShrink:0}}></div>
+                            <span style={{fontSize:10, fontWeight:600, minWidth:90, flexShrink:0}}>{d.label}</span>
+                            <select style={{flex:1, padding:'3px 4px', border:'1px solid #E5E7EB', borderRadius:4, fontSize:10, minWidth:0}} value={frontCover[d.key]||''} onChange={e=>setFrontCover(f=>({...f,[d.key]:e.target.value}))}>
+                              <option value="">None</option>
+                              {referrals.map((r,i)=> r.member_name ? <option key={i} value={i+1}>{r.member_name}</option> : null)}
+                            </select>
+                          </div>
+                        ))}
+                      </div>
+
                       <p style={{fontSize:11, color:'#888', marginBottom:10}}>Referral Request column is left blank for handwriting at meetings.</p>
                       {referrals.map((r, i) => (
                         <div key={i} style={{background:'#F9FAFB', borderRadius:4, padding:6, marginBottom:4, border:'1px solid #E5E7EB', display:'flex', alignItems:'center', gap:6}}>
