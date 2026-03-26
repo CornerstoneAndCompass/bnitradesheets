@@ -1568,33 +1568,33 @@
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
                         <div className="ts-topbar" style={{minHeight:'auto', padding:'8px 14px'}}>
-                          <span className="ts-topbar-logo">BNI</span>
-                          <span className="ts-topbar-chapter">{shortName}</span>
-                          <span className="ts-topbar-sub">Member Referral Request</span>
+                          <span className="ts-topbar-logo" style={{fontSize:22}}>BNI</span>
+                          <span className="ts-topbar-chapter" style={{fontSize:18, letterSpacing:2}}>{shortName}</span>
+                          <span className="ts-topbar-sub" style={{fontSize:20, letterSpacing:3}}>Member Referral Request</span>
                         </div>
-                        <div style={{flex:1, display:'flex', flexDirection:'column', padding:'0 8px', overflow:'hidden', position:'relative'}}>
+                        <div style={{flex:1, display:'flex', flexDirection:'column', padding:'0', overflow:'hidden', position:'relative'}}>
                           <table className="ts-ref" style={{flex:1}}>
                             <thead>
                               <tr>
                                 <th style={{width:24}}>#</th>
-                                <th style={{width:'28%'}}>Member/Contact</th>
-                                <th style={{width:'14%'}}>Business Name</th>
-                                <th style={{width:'14%'}}>BNI Category</th>
-                                <th>Referral Request</th>
+                                <th style={{width:'24%'}}>Member/Contact</th>
+                                <th style={{width:'13%'}}>Business Name</th>
+                                <th style={{width:'13%'}}>BNI Category</th>
+                                <th style={{width:'28%'}}>Referral Request</th>
                               </tr>
                             </thead>
                             <tbody>{buildRefPage(leftRefs, 1)}</tbody>
                           </table>
                           {/* Decorative overlay text on right side - positioned over Referral Request column */}
-                          <div style={{position:'absolute', right:0, top:28, width:'22%', height:'calc(100% - 28px)', display:'flex', flexDirection:'column', pointerEvents:'none'}}>
+                          <div style={{position:'absolute', right:0, top:28, width:'28%', height:'calc(100% - 28px)', display:'flex', flexDirection:'column', pointerEvents:'none'}}>
                             <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:26, fontWeight:800, color:'var(--bni-red)', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Presenting<br/>Today</div>
+                              <div style={{fontSize:32, fontWeight:800, color:'var(--bni-red)', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.15}}>Presenting<br/>Today</div>
                             </div>
                             <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:28, fontWeight:800, color:'#C5A55A', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Golden<br/>Mic</div>
+                              <div style={{fontSize:34, fontWeight:800, color:'#C5A55A', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.15}}>Golden<br/>Mic</div>
                             </div>
                             <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <div style={{fontSize:22, color:'#A81828', fontWeight:800, textAlign:'center', lineHeight:1.15, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>I'm new<br/>book at 121</div>
+                              <div style={{fontSize:28, color:'#A81828', fontWeight:800, textAlign:'center', lineHeight:1.15, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.15}}>I'm new<br/>book at 121</div>
                             </div>
                           </div>
                         </div>
@@ -1609,28 +1609,28 @@
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
                         <div className="ts-topbar" style={{minHeight:'auto', padding:'8px 14px'}}>
-                          <span className="ts-topbar-logo">BNI</span>
-                          <span className="ts-topbar-chapter">{shortName}</span>
-                          <span className="ts-topbar-sub">Member Referral Request</span>
+                          <span className="ts-topbar-logo" style={{fontSize:22}}>BNI</span>
+                          <span className="ts-topbar-chapter" style={{fontSize:18, letterSpacing:2}}>{shortName}</span>
+                          <span className="ts-topbar-sub" style={{fontSize:20, letterSpacing:3}}>Member Referral Request</span>
                         </div>
-                        <div style={{flex:1, display:'flex', flexDirection:'column', padding:'0 8px', overflow:'hidden', position:'relative'}}>
+                        <div style={{flex:1, display:'flex', flexDirection:'column', padding:'0', overflow:'hidden', position:'relative'}}>
                           <table className="ts-ref" style={{flex:1}}>
                             <thead>
                               <tr>
-                                <th style={{width:30}}>#</th>
-                                <th style={{width:'30%'}}>Member/Contact</th>
-                                <th style={{width:'16%'}}>Business Name</th>
-                                <th style={{width:'16%'}}>BNI Category</th>
-                                <th>Referral Request</th>
+                                <th style={{width:24}}>#</th>
+                                <th style={{width:'24%'}}>Member/Contact</th>
+                                <th style={{width:'13%'}}>Business Name</th>
+                                <th style={{width:'13%'}}>BNI Category</th>
+                                <th style={{width:'28%'}}>Referral Request</th>
                               </tr>
                             </thead>
                             <tbody>{buildRefPage(rightRefs, PER_PAGE + 1, true)}</tbody>
                           </table>
                           {/* Decorative microphone icons bottom-right */}
-                          <div style={{position:'absolute', bottom:6, right:8, display:'flex', gap:4, opacity:0.2}}>
-                            <img src="images/mic.png" alt="" style={{width:20, height:'auto'}} />
-                            <img src="images/mic.png" alt="" style={{width:24, height:'auto'}} />
-                            <img src="images/mic.png" alt="" style={{width:20, height:'auto'}} />
+                          <div style={{position:'absolute', bottom:10, right:16, display:'flex', gap:8, opacity:0.15}}>
+                            <img src="images/mic.png" alt="" style={{width:36, height:'auto'}} />
+                            <img src="images/mic.png" alt="" style={{width:44, height:'auto'}} />
+                            <img src="images/mic.png" alt="" style={{width:36, height:'auto'}} />
                           </div>
                         </div>
                         <div className="ts-foot">1 Referral. 1 one-to-one. 1 CEU. 1 Meeting. 1 Visitor. = Power of one</div>
@@ -1643,17 +1643,18 @@
                   {(activePage === 'back' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
-                        <div className="ts-topbar" style={{justifyContent:'center', minHeight:'auto', padding:'8px 14px'}}>
-                          <span className="ts-topbar-logo">BNI</span>
-                          <span className="ts-topbar-chapter">{(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}</span>
+                        <div className="ts-topbar" style={{justifyContent:'flex-start', minHeight:'auto', padding:'8px 14px'}}>
+                          <span className="ts-topbar-logo" style={{fontSize:22}}>BNI</span>
+                          <span className="ts-topbar-chapter" style={{fontSize:22, letterSpacing:3}}>{(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}</span>
                         </div>
 
-                        {/* MAIN TWO-COLUMN AREA - flex:1 to fill page between topbar and footer */}
-                        <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden'}}>
-                          <div style={{flex:1, display:'flex', gap:8, padding:'8px 14px 4px', overflow:'hidden'}}>
-                            {/* LEFT COLUMN */}
-                            <div style={{flex:'0 0 46%', display:'flex', flexDirection:'column', gap:3, overflow:'hidden'}}>
-                              {/* BNI Podcasts - 4 in a row - MOVE TO TOP */}
+                        {/* MAIN CONTENT AREA */}
+                        <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden', padding:'6px 10px 4px'}}>
+                          {/* TOP TWO-COLUMN AREA */}
+                          <div style={{flex:1, display:'flex', gap:10, overflow:'hidden', minHeight:0}}>
+                            {/* LEFT COLUMN - Podcasts, Dates, Occupations */}
+                            <div style={{flex:'0 0 46%', display:'flex', flexDirection:'column', gap:4, overflow:'hidden'}}>
+                              {/* BNI Podcasts */}
                               <div>
                                 <div className="ts-hdr" style={{marginBottom:3}}>BNI Podcasts</div>
                                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:4}}>
@@ -1669,14 +1670,14 @@
                                         <div style={{fontWeight:700, fontSize:7, lineHeight:1.2, color:'#333', whiteSpace:'pre-line'}}>{p.title}</div>
                                         <div style={{fontSize:6, color:'#666', lineHeight:1.2, marginTop:1}}>Hosted by</div>
                                         <div style={{fontSize:6, color:'#666', lineHeight:1.2, whiteSpace:'pre-line'}}>{p.host}</div>
-                                        <div style={{fontSize:6, color:'#999', lineHeight:1.2, marginTop:1}}>{p.eps} Episodes<br/>= 1 CEU</div>
+                                        <div style={{fontSize:6, color:'var(--bni-red)', lineHeight:1.2, marginTop:1, textDecoration:'underline'}}>{p.eps} Episodes<br/>= 1 CEU</div>
                                       </div>
                                     </div>
                                   ))}
                                 </div>
                               </div>
 
-                              {/* Upcoming Dates - MOVE DOWN */}
+                              {/* Upcoming Dates */}
                               <div>
                                 <div className="ts-hdr" style={{marginBottom:0}}>Upcoming Dates</div>
                                 <table style={{width:'100%', borderCollapse:'collapse', fontSize:10}}>
@@ -1690,13 +1691,13 @@
                                     {[1,2,3,4,5,6].map(i => {
                                       const [dt] = bp('date_'+i);
                                       const [ev] = bp('event_'+i);
-                                      return <tr key={i} style={{background:'white'}}><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight:400, fontSize:10}}>{dt}</td><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight:400, fontSize:10}}>{ev}</td></tr>;
+                                      return <tr key={i} style={{background: i === 3 ? '#F5E0E0' : 'white'}}><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight: i === 3 ? 700 : 400, fontSize:10}}>{dt}</td><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight: i === 3 ? 700 : 400, fontSize:10}}>{ev}</td></tr>;
                                     })}
                                   </tbody>
                                 </table>
                               </div>
 
-                              {/* Targeting Occupations - RENAMED from Stack Day */}
+                              {/* Targeting Occupations */}
                               <div>
                                 <div className="ts-hdr" style={{marginBottom:0}}>Targeting Occupations</div>
                                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:9}}>
@@ -1710,90 +1711,94 @@
                                     {l:'Psychologist', r:'Florist'}
                                   ].map((row,i) => (
                                     <React.Fragment key={i}>
-                                      <div style={{padding:'2px 4px', borderBottom:'1px solid #e0e0e0', borderRight:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0'}}>{backPage['tgt_l_'+i]||row.l}</div>
-                                      <div style={{padding:'2px 4px', borderBottom:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0'}}>{backPage['tgt_r_'+i]||row.r}</div>
+                                      <div style={{padding:'2px 6px', borderBottom:'1px solid #e0e0e0', borderRight:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0', textAlign:'center'}}>{backPage['tgt_l_'+i]||row.l}</div>
+                                      <div style={{padding:'2px 6px', borderBottom:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0', textAlign:'center'}}>{backPage['tgt_r_'+i]||row.r}</div>
                                     </React.Fragment>
                                   ))}
                                 </div>
                               </div>
-
-                              {/* Facebook QR - MOVE FROM BOTTOM TO LEFT COLUMN */}
-                              <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:6, padding:'8px 6px', background:'#F5E0E0', border:'1px solid #ccc', borderRadius:2}}>
-                                <div style={{fontWeight:800, fontSize:11, color:'var(--bni-red)', lineHeight:1.3, textAlign:'center'}}>Scan here<br/>for our<br/>Facebook<br/>page</div>
-                                <div style={{width:50, height:50, background:'white', border:'2px solid var(--bni-red)', borderRadius:2, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'var(--bni-red)', fontWeight:700}}>QR</div>
-                              </div>
                             </div>
 
-                            {/* RIGHT COLUMN */}
-                            <div style={{flex:'0 0 52%', display:'flex', flexDirection:'column', gap:3, overflow:'hidden'}}>
-                              {/* Education Notes - fixed height ~120px */}
+                            {/* RIGHT COLUMN - Education, Feature, Referrals */}
+                            <div style={{flex:'0 0 52%', display:'flex', flexDirection:'column', gap:4, overflow:'hidden'}}>
+                              {/* Education Notes */}
                               <div>
-                                <div className="ts-hdr">Education Notes <span style={{fontWeight:400, fontStyle:'italic', fontSize:9}}>When you learn more, you earn more.</span></div>
-                                <div style={{background:'white', border:'1px solid #ddd', borderTop:'none', height:100}}>
+                                <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, padding:'2px 0'}}>Education Notes</div>
+                                <div style={{fontSize:9, color:'#555', marginBottom:4}}>When you learn more, you earn more.</div>
+                                <div style={{background:'white', border:'1px solid #ddd', height:90}}>
                                   {[...Array(4)].map((_,i) => (
-                                    <div key={i} style={{borderBottom:'1px solid #e0e0e0', height:25}}></div>
+                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:22}}></div>
                                   ))}
                                 </div>
                               </div>
 
-                              {/* Feature Presentation - fixed height */}
+                              {/* Feature Presentation */}
                               <div>
-                                <div className="ts-hdr" style={{marginBottom:0}}>Feature Presentation</div>
-                                <div style={{borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', display:'flex', alignItems:'center'}}>
+                                <div style={{display:'flex', alignItems:'flex-start', gap:8, marginBottom:2}}>
                                   <div style={{flex:1}}>
-                                    <div style={{padding:'2px 8px', fontSize:9, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
-                                    <div style={{padding:'1px 8px 4px', fontSize:12}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('feature_company')[0]}</span></div>
+                                    <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, marginBottom:2}}>Feature Presentation</div>
+                                    <div style={{fontSize:9, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
+                                    <div style={{fontSize:13, marginTop:1}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555', fontSize:11}}>{bp('feature_company')[0]}</span></div>
                                   </div>
-                                  <img src="images/gobloom-logo.png" alt="GoBloom" style={{width:50, height:'auto', marginRight:6, opacity:0.8}} />
+                                  <img src="images/gobloom-logo.png" alt="GoBloom" style={{width:60, height:'auto', opacity:0.8, marginTop:2}} />
                                 </div>
-                                <div style={{background:'white', borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', height:100}}>
-                                  {[...Array(4)].map((_,i) => (
-                                    <div key={i} style={{borderBottom:'1px solid #e0e0e0', height:25}}></div>
+                                <div style={{background:'white', border:'1px solid #ddd', height:80}}>
+                                  {[...Array(3)].map((_,i) => (
+                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:26}}></div>
                                   ))}
                                 </div>
-                                <div style={{border:'1px solid #d0c0dd', padding:'4px 8px', fontSize:10, lineHeight:1.3, background:'#EDE5F3'}}>
+                                <div style={{border:'1px solid #ddd', borderTop:'none', padding:'4px 8px', fontSize:10, lineHeight:1.3, background:'white'}}>
                                   <div style={{fontSize:9}}>Next weeks presentation:</div>
                                   <div><span style={{fontWeight:700, color:'var(--bni-red)'}}>{bp('next_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('next_company')[0]}</span></div>
                                 </div>
                               </div>
 
-                              {/* Referrals & testimonials - grows to fill remaining space */}
+                              {/* Referrals & testimonials */}
                               <div style={{display:'flex', flexDirection:'column', flex:1, minHeight:0}}>
-                                <div className="ts-hdr">Referrals & testimonials</div>
-                                <div style={{border:'1px solid #ddd', borderTop:'none', flex:1, display:'flex', flexDirection:'column'}}>
+                                <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, padding:'2px 0'}}>Referrals & testimonials</div>
+                                <div style={{border:'1px solid #ddd', flex:1, display:'flex', flexDirection:'column'}}>
                                   {[...Array(4)].map((_,i) => (
-                                    <div key={i} style={{borderBottom: i < 3 ? '1px solid #e0e0e0' : 'none', flex:1, marginLeft:8, marginRight:8}}></div>
+                                    <div key={i} style={{borderBottom: i < 3 ? '1px solid #e8e8e8' : 'none', flex:1}}></div>
                                   ))}
                                 </div>
-                                <div style={{padding:'3px 8px', fontSize:8, color:'#555', borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', borderBottom:'1px solid #ddd'}}>
+                                <div style={{padding:'4px 8px', fontSize:8, color:'#555', border:'1px solid #ddd', borderTop:'none'}}>
                                   Refer to your BNI Connect App. Members Please enter your weekly STATS into the BNI Connect app
                                 </div>
                               </div>
+                            </div>
+                          </div>
 
-                              {/* VP Report - fixed at bottom */}
-                              <div style={{flexShrink:0, border:'1px solid #ccc'}}>
-                                <div style={{background:'var(--bni-red)', color:'white', fontWeight:700, fontSize:11, padding:'3px 8px', textAlign:'center'}}>Vice President Report</div>
-                                <table style={{width:'100%', borderCollapse:'collapse', tableLayout:'fixed'}}>
-                                  <thead>
-                                    <tr style={{background:'#F5E0E0'}}>
-                                      <th style={{textAlign:'left', width:'40%', padding:'2px 6px', fontSize:8, fontWeight:600, borderBottom:'1px solid #ccc', borderRight:'1px solid #ccc'}}>KPI</th>
-                                      <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Last Week<br/>Actual</th>
-                                      <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Weekly<br/>Budget</th>
-                                      <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026 per wk<br/>average</th>
+                          {/* BOTTOM ROW - QR Code (left) + VP Report (right) spanning full width */}
+                          <div style={{display:'flex', gap:10, flexShrink:0, marginTop:4}}>
+                            {/* QR / Facebook section */}
+                            <div style={{flex:'0 0 120px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:4, padding:'6px'}}>
+                              <div style={{fontWeight:800, fontSize:14, color:'var(--bni-red)', lineHeight:1.2, textAlign:'center'}}>Scan here<br/>for our<br/>Facebook<br/>page</div>
+                              <div style={{width:60, height:60, background:'white', border:'2px solid var(--bni-red)', borderRadius:2, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'var(--bni-red)', fontWeight:700}}>QR</div>
+                            </div>
+
+                            {/* VP Report */}
+                            <div style={{flex:1, border:'1px solid #ccc'}}>
+                              <div style={{background:'var(--bni-red)', color:'white', fontWeight:700, fontSize:12, padding:'4px 8px'}}>Vice President Report</div>
+                              <table style={{width:'100%', borderCollapse:'collapse', tableLayout:'fixed'}}>
+                                <thead>
+                                  <tr style={{background:'#F5E0E0'}}>
+                                    <th style={{textAlign:'left', width:'40%', padding:'2px 6px', fontSize:9, fontWeight:700, borderBottom:'1px solid #ccc', borderRight:'1px solid #ccc'}}>KPI</th>
+                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Last Week<br/>Actual</th>
+                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Weekly<br/>Budget</th>
+                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026 per wk<br/>average</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {vpKPIs.map((kpi, i) => (
+                                    <tr key={i}>
+                                      <td style={{fontWeight: i < 4 ? 600 : 400, fontSize:9, padding:'2px 6px', borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', lineHeight:1.3}}>{kpi}</td>
+                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
+                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
+                                      <td style={{borderBottom:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
                                     </tr>
-                                  </thead>
-                                  <tbody>
-                                    {vpKPIs.map((kpi, i) => (
-                                      <tr key={i} style={{verticalAlign:'middle'}}>
-                                        <td style={{fontWeight: i < 3 ? 600 : 400, fontSize:8, padding:'2px 4px', borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', lineHeight:1.2}}>{kpi}</td>
-                                        <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 1px', fontSize:8}}></td>
-                                        <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 1px', fontSize:8}}></td>
-                                        <td style={{borderBottom:'1px solid #ddd', padding:'2px 1px', fontSize:8}}></td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
+                                  ))}
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         </div>
