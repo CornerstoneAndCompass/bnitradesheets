@@ -1335,12 +1335,10 @@
         if (designation) {
           dataBg = designation.bg;
           reqBg = designation.reqBg;
-        } else if (hasRole) {
-          dataBg = '#FBE5E7';
-          reqBg = '#FDF2F3';
         } else {
-          dataBg = num % 2 === 0 ? '#FBE5E7' : 'white';
-          reqBg = num % 2 === 0 ? '#FDF2F3' : 'white';
+          // Alternates: odd rows #EBFDE5 (light green), even rows #FBE5E7 (light pink)
+          dataBg = num % 2 === 1 ? '#EBFDE5' : '#FBE5E7';
+          reqBg = dataBg;
         }
         return (
           <tr>
