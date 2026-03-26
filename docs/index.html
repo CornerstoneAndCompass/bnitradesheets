@@ -156,11 +156,11 @@
     .ts-panel { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid #E5E7EB; overflow: hidden; }
 
     /* Top red banner */
-    .ts-topbar { background: var(--bni-red); color: white; display: flex; align-items: center; padding: 6px 12px; flex-shrink: 0; }
-    .ts-topbar-logo { font-weight: 900; font-size: 20px; letter-spacing: 0.5px; white-space: nowrap; }
-    .ts-topbar-chapter { font-weight: 300; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; margin-left: 3px; }
-    .ts-topbar-right { margin-left: auto; text-align: right; font-size: 9px; line-height: 1.3; opacity: 0.95; }
-    .ts-topbar-sub { font-size: 10px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; margin-left: 12px; }
+    .ts-topbar { background: var(--bni-red); color: white; display: flex; align-items: center; padding: 12px 14px; flex-shrink: 0; min-height: 83px; }
+    .ts-topbar-logo { font-weight: 900; font-size: 28px; letter-spacing: 1px; white-space: nowrap; }
+    .ts-topbar-chapter { font-weight: 300; font-size: 28px; letter-spacing: 4px; text-transform: uppercase; margin-left: 4px; }
+    .ts-topbar-right { margin-left: auto; text-align: right; font-size: 10px; line-height: 1.4; opacity: 0.95; }
+    .ts-topbar-sub { font-size: 16px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; margin-left: auto; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
 
     /* Section headers - RED bg white text matching photos */
     .ts-hdr { background: var(--bni-red); color: white; font-size: 11px; font-weight: 800; padding: 3px 6px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0; line-height: 1.2; }
@@ -329,58 +329,69 @@
     // ===== DEMO MODE: In-memory mock API for GitHub Pages =====
     const DEMO_DATA = {
       users: [
-        {id:1, email:'admin@bni.com.au', name:'Ben Marriott', role:'admin', chapter_id:null, business_name:'Cornerstone & Compass', business_category:'Digital Marketing'},
-        {id:2, email:'alana@bni.com.au', name:'Alana Prideaux', role:'chapter_admin', chapter_id:1, business_name:'LP Advisory', business_category:'Buyers Agent'},
-        {id:3, email:'graham@bni.com.au', name:'Graham Bott-Paul', role:'member', chapter_id:1, business_name:'Compass Financial', business_category:'Financial Planning'},
-        {id:4, email:'sarah@bni.com.au', name:'Sarah Mitchell', role:'member', chapter_id:1, business_name:'Mitchell Realty', business_category:'Real Estate Agent'},
-        {id:5, email:'james@bni.com.au', name:'James Chen', role:'member', chapter_id:1, business_name:'Chen & Associates', business_category:'Accounting'},
-        {id:6, email:'rachel@bni.com.au', name:'Rachel Foster', role:'member', chapter_id:1, business_name:'Foster Financial', business_category:'Mortgage Broker'},
-        {id:7, email:'david@bni.com.au', name:'David Kumar', role:'member', chapter_id:1, business_name:'Kumar IT Solutions', business_category:'IT Services'},
-        {id:8, email:'lisa@bni.com.au', name:'Lisa Nguyen', role:'member', chapter_id:1, business_name:'Nguyen Marketing', business_category:'Marketing'},
-        {id:9, email:'michael@bni.com.au', name:'Michael Torres', role:'member', chapter_id:1, business_name:'Torres Insurance', business_category:'Insurance Broker'},
-        {id:10, email:'amanda@bni.com.au', name:'Amanda Clarke', role:'member', chapter_id:1, business_name:'Clarke Legal', business_category:'Family Lawyer'},
-        {id:11, email:'chris@bni.com.au', name:'Chris Patel', role:'member', chapter_id:1, business_name:'Patel Constructions', business_category:'Builder - Residential'},
-        {id:12, email:'karen@bni.com.au', name:'Karen Lee', role:'member', chapter_id:1, business_name:'Lee Photography', business_category:'Photographer'},
-        {id:13, email:'tom@bni.com.au', name:'Tom Richardson', role:'member', chapter_id:1, business_name:'Richardson Plumbing', business_category:'Plumber'},
-        {id:14, email:'nicole@bni.com.au', name:'Nicole Adams', role:'member', chapter_id:1, business_name:'Adams & Partners', business_category:'Property Management'},
-        {id:15, email:'peter@bni.com.au', name:'Peter Walsh', role:'member', chapter_id:1, business_name:'Walsh Electrical', business_category:'Electrician'},
-        {id:16, email:'emma@bni.com.au', name:'Emma Sullivan', role:'member', chapter_id:1, business_name:'Sullivan Designs', business_category:'Interior Design'},
-        {id:17, email:'brad@bni.com.au', name:'Brad Kirby', role:'chapter_admin', chapter_id:2, business_name:'Mortgage Choice', business_category:'Mortgage Broker'},
-        {id:18, email:'carly@bni.com.au', name:'Carly Morris', role:'member', chapter_id:2, business_name:'CLD Insurance', business_category:'Insurance - Commercial'},
-        {id:19, email:'daniel@bni.com.au', name:'Daniel Melone', role:'member', chapter_id:2, business_name:'Monarch Australia', business_category:'Window Furnishings'},
-        {id:20, email:'emily@bni.com.au', name:'Emily Coltraine', role:'member', chapter_id:2, business_name:'Red Fox Strategy', business_category:'Business Consultant'},
+        {id:1, email:'benjamin@cornerstoneandcompass.com', name:'Benjamin Marriott', role:'admin', chapter_id:1, business_name:'Cornerstone and Compass', business_category:'Web Developer', phone:'0416 612 546'},
+        {id:2, email:'design@neoretro.com.au', name:'Lachlan McDonald', role:'member', chapter_id:1, business_name:'NeoRetro', business_category:'Graphic Designer', phone:'0400 070 350'},
+        {id:3, email:'action@universal-osteopathy.com', name:'Simon Duncan', role:'member', chapter_id:1, business_name:'Universal Osteopathy', business_category:'Osteopath', phone:'0488 980 266'},
+        {id:4, email:'marcus@emberproperty.com.au', name:'Marcus Auch-Schwelk', role:'member', chapter_id:1, business_name:'Ember Property', business_category:'Property Management', phone:'0404 430 111'},
+        {id:5, email:'anastasia@gobloom.com.au', name:'Anastasia Searle', role:'member', chapter_id:1, business_name:'GoBloom', business_category:'Health & Wellness - Home Care Support', phone:'0407 733 064'},
+        {id:6, email:'info@spark-life.com.au', name:'Liam Gillespie', role:'member', chapter_id:1, business_name:'Spark Life Electrical Contractors', business_category:'Electrician - Residential', phone:'0434 343 687'},
+        {id:7, email:'hello@lsnutrition.com.au', name:'Laura Sedgwick', role:'member', chapter_id:1, business_name:'LS Nutrition', business_category:'Nutritionist', phone:'0437 681 814'},
+        {id:8, email:'graham@reliantbi.com.au', name:'Graham Don Paul', role:'member', chapter_id:1, business_name:'Reliant Business Insurance', business_category:'Business Insurance Broker', phone:'0492 333 953'},
+        {id:9, email:'ange.sarailis@eview.com.au', name:'Ange Sarailis', role:'member', chapter_id:1, business_name:'Eview Real Estate', business_category:'Residential Real Estate', phone:'0419 223 723'},
+        {id:10, email:'kelly@onetribemarketing.com.au', name:'Kelly Jones', role:'member', chapter_id:1, business_name:'One Tribe Marketing', business_category:'Marketing Consultant', phone:'0413 122 709'},
+        {id:11, email:'trent@inner-athlete.com.au', name:'Trent Pirihi', role:'member', chapter_id:1, business_name:'Inner Athlete', business_category:'Youth Athletic Development', phone:'0483 956 560'},
+        {id:12, email:'calicleanau@gmail.com', name:'Kerrie Vivas', role:'member', chapter_id:1, business_name:'Cali Clean', business_category:'Cleaning', phone:'0434 743 358'},
+        {id:13, email:'mcgardening3195@outlook.com', name:'Michael Casaceli', role:'member', chapter_id:1, business_name:'MC Gardening', business_category:'Lawn & Garden Professional', phone:'0484 324 727'},
+        {id:14, email:'amy@argentadvisory.com.au', name:'Amy Bignell', role:'member', chapter_id:1, business_name:'Argent Advisory', business_category:'General Accountant', phone:'0434 084 635'},
+        {id:15, email:'lawrence@fitforpurposefinance.com.au', name:'Lawrence Sukhu', role:'member', chapter_id:1, business_name:'Fit for Purpose Finance', business_category:'Commercial Loans', phone:'0415 835 479'},
+        {id:16, email:'chris@excitehealthfitness.com.au', name:'Chris Mutimer', role:'member', chapter_id:1, business_name:'Excite Health & Fitness', business_category:'Group Fitness Expert', phone:'0408 541 527'},
+        {id:17, email:'jskoblar@aplusconveyancing.com.au', name:'Josephine Raffaele', role:'member', chapter_id:1, business_name:'A Plus Conveyancing VIC', business_category:'Conveyancing', phone:'03 8740 3566'},
+        {id:18, email:'info@plumblife.com.au', name:'Molly Curd', role:'member', chapter_id:1, business_name:'Plumblife', business_category:'Plumbing', phone:'0411 442 316'},
+        {id:19, email:'nick.comninacis@goldfinityfp.com.au', name:'Nick Comninacis', role:'member', chapter_id:1, business_name:'Goldfinity Financial Planning', business_category:'Financial Adviser - Wealth and Superannuation', phone:'03 8521 0611'},
+        {id:20, email:'info@kathryngreen.org', name:'Kathryn Green', role:'member', chapter_id:1, business_name:'Kathryn Green Coaching', business_category:'Training & Coaching - Mindset & Wellbeing Coach', phone:'0402 761 301'},
+        {id:21, email:'katrina@arcadiabookkeeping.com.au', name:'Katrina Clark', role:'member', chapter_id:1, business_name:'Arcadia Bookkeeping', business_category:'Accounting Bookkeeping Service', phone:'0402 656 544'},
+        {id:22, email:'tara@ifinances.com.au', name:'Tara Bonnitcha', role:'member', chapter_id:1, business_name:'iFinance Solutions', business_category:'Residential Mortgage Broker', phone:'0439 808 111'},
+        {id:23, email:'maurelio@mgdatacomm.com.au', name:'Maurelio Gomes', role:'member', chapter_id:1, business_name:'MG Datacomm', business_category:'IT Support Services', phone:'0402 838 631'},
+        {id:24, email:'sophie@realpropertypartners.com.au', name:'Sophie Dobson', role:'member', chapter_id:1, business_name:'Real Property Partners', business_category:'Buyers Agent', phone:'0424 509 669'},
+        {id:25, email:'hello@clearthread.com.au', name:'Liz Coluccio', role:'member', chapter_id:1, business_name:'Clearthread Communications', business_category:'Copywriter', phone:'0438 210 017'},
       ],
       chapters: [
-        {id:1, name:'BNI Royals Kingston', region:'Melbourne South', meeting_day:'Wednesday', meeting_time:'7:00 AM', meeting_location:'Kingston City Hall', meeting_address:'985 Nepean Hwy, Moorabbin VIC 3189', member_count:15, status:'active'},
-        {id:2, name:'BNI Quantum', region:'Melbourne Central', meeting_day:'Friday', meeting_time:'6:30 AM', meeting_location:'Kooyong Lawn Tennis Club', meeting_address:'489 Glenferrie Rd, Kooyong VIC 3144', member_count:4, status:'active'},
-        {id:3, name:'BNI Prestige', region:'Melbourne Central', meeting_day:'Thursday', meeting_time:'7:00 AM', meeting_location:'Royal Brighton Yacht Club', meeting_address:'253 Esplanade, Brighton VIC 3186', member_count:0, status:'active'},
+        {id:1, name:'BNI Royals Kingston', region:'Melbourne South', meeting_day:'Tuesday', meeting_time:'7:00 AM', meeting_location:'Parkdale Cricket Club', meeting_address:'Gerry Green Reserve, Parkdale VIC 3195', member_count:25, status:'active'},
       ],
       tradesheets: [
-        {id:1, chapter_id:1, chapter_name:'BNI Royals Kingston', week_date:'2026-03-18', status:'review', front_cover:'{}', back_page:'{}', print_copies:50, shipping_address:'Kingston City Hall, 985 Nepean Hwy, Moorabbin VIC 3189', submitted_by:2, submitted_by_name:'Alana Prideaux', created_at:'2026-03-14', updated_at:'2026-03-14', meeting_day:'Wednesday', meeting_time:'7:00 AM', meeting_location:'Kingston City Hall',
+        {id:1, chapter_id:1, chapter_name:'BNI Royals Kingston', week_date:'2026-03-24', status:'review', front_cover:'{}', back_page:'{}', print_copies:30, shipping_address:'Parkdale Cricket Club, Gerry Green Reserve, Parkdale VIC 3195', submitted_by:2, submitted_by_name:'Lachlan McDonald', created_at:'2026-03-20', updated_at:'2026-03-20', meeting_day:'Tuesday', meeting_time:'7:00 AM', meeting_location:'Parkdale Cricket Club',
           referrals: [
-            {id:3, member_id:3, member_name:'Graham Bott-Paul', business_name:'Compass Financial', business_category:'Financial Planning', request_text:''},
-            {id:4, member_id:4, member_name:'Sarah Mitchell', business_name:'Mitchell Realty', business_category:'Real Estate Agent', request_text:''},
-            {id:5, member_id:5, member_name:'James Chen', business_name:'Chen & Associates', business_category:'Accounting', request_text:''},
-            {id:6, member_id:6, member_name:'Rachel Foster', business_name:'Foster Financial', business_category:'Mortgage Broker', request_text:''},
-            {id:7, member_id:7, member_name:'David Kumar', business_name:'Kumar IT Solutions', business_category:'IT Services', request_text:''},
-            {id:8, member_id:8, member_name:'Lisa Nguyen', business_name:'Nguyen Marketing', business_category:'Marketing', request_text:''},
-            {id:9, member_id:9, member_name:'Michael Torres', business_name:'Torres Insurance', business_category:'Insurance Broker', request_text:''},
-            {id:10, member_id:10, member_name:'Amanda Clarke', business_name:'Clarke Legal', business_category:'Family Lawyer', request_text:''},
-            {id:11, member_id:11, member_name:'Chris Patel', business_name:'Patel Constructions', business_category:'Builder - Residential', request_text:''},
-            {id:12, member_id:12, member_name:'Karen Lee', business_name:'Lee Photography', business_category:'Photographer', request_text:''},
-            {id:13, member_id:13, member_name:'Tom Richardson', business_name:'Richardson Plumbing', business_category:'Plumber', request_text:''},
-            {id:14, member_id:14, member_name:'Nicole Adams', business_name:'Adams & Partners', business_category:'Property Management', request_text:''},
-            {id:15, member_id:15, member_name:'Peter Walsh', business_name:'Walsh Electrical', business_category:'Electrician', request_text:''},
-            {id:16, member_id:16, member_name:'Emma Sullivan', business_name:'Sullivan Designs', business_category:'Interior Design', request_text:''},
+            {id:2, member_id:2, member_name:'Lachlan McDonald', business_name:'NeoRetro', business_category:'Graphic Designer', phone:'0400 070 350', email:'design@neoretro.com.au', role:'Mentor, Go for Green & Trade Sheets', request_text:''},
+            {id:3, member_id:3, member_name:'Simon Duncan', business_name:'Universal Osteopathy', business_category:'Osteopath', phone:'0488 980 266', email:'action@universal-osteopathy.com', role:'Visitor Host', request_text:''},
+            {id:4, member_id:4, member_name:'Marcus Auch-Schwelk', business_name:'Ember Property', business_category:'Property Management', phone:'0404 430 111', email:'marcus@emberproperty.com.au', role:'Membership Committee', request_text:''},
+            {id:5, member_id:5, member_name:'Anastasia Searle', business_name:'GoBloom', business_category:'Health & Wellness - Home Care Support', phone:'0407 733 064', email:'anastasia@gobloom.com.au', role:'Membership Committee', request_text:''},
+            {id:6, member_id:6, member_name:'Liam Gillespie', business_name:'Spark Life Electrical Contractors', business_category:'Electrician - Residential', phone:'0434 343 687', email:'info@spark-life.com.au', role:'Education Coordinator', request_text:''},
+            {id:7, member_id:7, member_name:'Laura Sedgwick', business_name:'LS Nutrition', business_category:'Nutritionist', phone:'0437 681 814', email:'hello@lsnutrition.com.au', request_text:''},
+            {id:8, member_id:8, member_name:'Graham Don Paul', business_name:'Reliant Business Insurance', business_category:'Business Insurance Broker', phone:'0492 333 953', email:'graham@reliantbi.com.au', role:'President', request_text:''},
+            {id:9, member_id:9, member_name:'Ange Sarailis', business_name:'Eview Real Estate', business_category:'Residential Real Estate', phone:'0419 223 723', email:'ange.sarailis@eview.com.au', role:'Events & Growth Coordinator', request_text:''},
+            {id:10, member_id:10, member_name:'Kelly Jones', business_name:'One Tribe Marketing', business_category:'Marketing Consultant', phone:'0413 122 709', email:'kelly@onetribemarketing.com.au', role:'Social Media Coordinator', request_text:''},
+            {id:11, member_id:11, member_name:'Trent Pirihi', business_name:'Inner Athlete', business_category:'Youth Athletic Development', phone:'0483 956 560', email:'trent@inner-athlete.com.au', role:'Mentor', request_text:''},
+            {id:12, member_id:12, member_name:'Kerrie Vivas', business_name:'Cali Clean', business_category:'Cleaning', phone:'0434 743 358', email:'calicleanau@gmail.com', role:'Visitor Host', request_text:''},
+            {id:13, member_id:13, member_name:'Michael Casaceli', business_name:'MC Gardening', business_category:'Lawn & Garden Professional', phone:'0484 324 727', email:'mcgardening3195@outlook.com', role:'Visitor Host', request_text:''},
+            {id:14, member_id:14, member_name:'Amy Bignell', business_name:'Argent Advisory', business_category:'General Accountant', phone:'0434 084 635', email:'amy@argentadvisory.com.au', role:'Visitor Host', request_text:''},
+            {id:15, member_id:15, member_name:'Lawrence Sukhu', business_name:'Fit for Purpose Finance', business_category:'Commercial Loans', phone:'0415 835 479', email:'lawrence@fitforpurposefinance.com.au', role:'Membership Committee', request_text:''},
+            {id:16, member_id:16, member_name:'Chris Mutimer', business_name:'Excite Health & Fitness', business_category:'Group Fitness Expert', phone:'0408 541 527', email:'chris@excitehealthfitness.com.au', role:'Vice President', request_text:''},
+            {id:17, member_id:17, member_name:'Josephine Raffaele', business_name:'A Plus Conveyancing VIC', business_category:'Conveyancing', phone:'03 8740 3566', email:'jskoblar@aplusconveyancing.com.au', request_text:''},
+            {id:1, member_id:1, member_name:'Benjamin Marriott', business_name:'Cornerstone and Compass', business_category:'Web Developer', phone:'0416 612 546', email:'benjamin@cornerstoneandcompass.com', request_text:''},
+            {id:18, member_id:18, member_name:'Molly Curd', business_name:'Plumblife', business_category:'Plumbing', phone:'0411 442 316', email:'info@plumblife.com.au', request_text:''},
+            {id:19, member_id:19, member_name:'Nick Comninacis', business_name:'Goldfinity Financial Planning', business_category:'Financial Adviser - Wealth and Superannuation', phone:'03 8521 0611', email:'nick.comninacis@goldfinityfp.com.au', role:'Mentor', request_text:''},
+            {id:20, member_id:20, member_name:'Kathryn Green', business_name:'Kathryn Green Coaching', business_category:'Training & Coaching - Mindset & Wellbeing Coach', phone:'0402 761 301', email:'info@kathryngreen.org', role:'Visitor Host Coordinator', request_text:''},
+            {id:21, member_id:21, member_name:'Katrina Clark', business_name:'Arcadia Bookkeeping', business_category:'Accounting Bookkeeping Service', phone:'0402 656 544', email:'katrina@arcadiabookkeeping.com.au', role:'Secretary Treasurer', request_text:''},
+            {id:22, member_id:22, member_name:'Tara Bonnitcha', business_name:'iFinance Solutions', business_category:'Residential Mortgage Broker', phone:'0439 808 111', email:'tara@ifinances.com.au', role:'Visitor Host', request_text:''},
+            {id:23, member_id:23, member_name:'Maurelio Gomes', business_name:'MG Datacomm', business_category:'IT Support Services', phone:'0402 838 631', email:'maurelio@mgdatacomm.com.au', request_text:''},
+            {id:24, member_id:24, member_name:'Sophie Dobson', business_name:'Real Property Partners', business_category:'Buyers Agent', phone:'0424 509 669', email:'sophie@realpropertypartners.com.au', request_text:''},
+            {id:25, member_id:25, member_name:'Liz Coluccio', business_name:'Clearthread Communications', business_category:'Copywriter', phone:'0438 210 017', email:'hello@clearthread.com.au', request_text:''},
           ],
           notices: []
         },
-        {id:2, chapter_id:2, chapter_name:'BNI Quantum', week_date:'2026-03-13', status:'draft', front_cover:'{}', back_page:'{}', print_copies:30, shipping_address:'', submitted_by:17, submitted_by_name:'Brad Kirby', created_at:'2026-03-10', updated_at:'2026-03-10', referrals:[], notices:[]},
       ],
-      shipping: [
-        {id:1, trade_sheet_id:99, copies:50, shipping_address:'Meeting location', status:'dispatched', tracking_number:'AU7382947123', estimated_delivery:'2026-03-20', chapter_name:'BNI Active Networkers', week_date:'2026-03-07'},
-      ],
-      nextId: {users:21, chapters:4, tradesheets:3, shipping:2}
+      shipping: [],
+      nextId: {users:26, chapters:2, tradesheets:2, shipping:1}
     };
 
     // Deep clone seed data into working store
@@ -1115,33 +1126,33 @@
       // Placeholder data - shows when fields are empty
       const placeholders = {
         headline: 'Royals Kingston',
-        date: '2026-03-18',
-        venue: 'Kingston Arts Centre',
-        venue_address: '979 Nepean Hwy, Moorabbin VIC 3189',
+        date: '2026-03-24',
+        venue: 'Parkdale Cricket Club',
+        venue_address: 'Gerry Green Reserve, Parkdale VIC 3195',
         philosophy: "Success in BNI means being a positive and supportive member of an organisation based upon mutual support. This requires commitment to your fellow members as well as the philosophy of \"Givers Gain\": by giving business to others, you will get business in return.\n\nOur mission is to help members increase their business through a structured, positive, and professional \"Word-of-Mouth\" program that enables them to develop long-term, meaningful relationships with quality business professionals.",
-        ldr_pres: 'Graham Bott-Paul', ldr_vp: 'Sarah Mitchell', ldr_sec: 'James Chen',
-        ldr_mem1: 'Rachel Foster', ldr_mem2: 'David Kumar', ldr_mem3: 'Lisa Nguyen',
-        ldr_vhc: 'Michael Torres', ldr_vh1: 'Amanda Clarke', ldr_vh2: 'Chris Patel', ldr_vh3: 'Karen Lee',
-        ldr_edu: 'Tom Richardson', ldr_ment: 'Nicole Adams',
-        ldr_ment1: 'Peter Walsh', ldr_ment2: 'Emma Sullivan',
-        ldr_events: 'Daniel Kim', ldr_gfg: 'Sophie Brown',
-        ldr_social: 'Ryan O\'Brien', ldr_ts: 'Benjamin Marriott', ldr_dc: 'Mark Davidson',
-        sp_date_1: '18 Mar', sp_name_1: 'Graham Bott-Paul', sp_cat_1: 'Financial Planning',
-        sp_date_2: '25 Mar', sp_name_2: 'Sarah Mitchell', sp_cat_2: 'Real Estate',
-        sp_date_3: '1 Apr', sp_name_3: 'James Chen', sp_cat_3: 'Accounting',
-        sp_date_4: '8 Apr', sp_name_4: 'Rachel Foster', sp_cat_4: 'Mortgage Broker',
-        sp_date_5: '15 Apr', sp_name_5: 'David Kumar', sp_cat_5: 'IT Services',
-        sp_date_6: '22 Apr', sp_name_6: 'Lisa Nguyen', sp_cat_6: 'Marketing',
+        ldr_pres: 'Graham Don Paul', ldr_vp: 'Chris Mutimer', ldr_sec: 'Katrina Clark',
+        ldr_mem1: 'Lawrence Sukhu', ldr_mem2: 'Marcus Auch-Schwelk', ldr_mem3: 'Anastasia Searle', ldr_mem4: 'Members name here',
+        ldr_vhc: 'Kathryn Green', ldr_vh1: 'Michael Casaceli', ldr_vh2: 'Kerrie Vivas', ldr_vh3: 'Simon Duncan', ldr_vh4: 'Tara Bonnitcha', ldr_vh5: 'Amy Bignell',
+        ldr_edu: 'Liam Gillespie', ldr_ment: 'Lachlan McDonald',
+        ldr_ment1: 'Nick Comninacis', ldr_ment2: 'Trent Pirihi',
+        ldr_events: 'Ange Sarailis', ldr_gfg: 'Lachlan McDonald',
+        ldr_social: 'Kelly Jones', ldr_ts: 'Lachlan McDonald', ldr_dc: 'Jeremy Dart',
+        sp_date_1: '24/03', sp_name_1: 'Anastasia Searle', sp_cat_1: 'Health & Wellness',
+        sp_date_2: '31/03', sp_name_2: 'Lawrence Sukhu', sp_cat_2: 'Commercial Loans',
+        sp_date_3: '07/04', sp_name_3: 'Trent Pirihi', sp_cat_3: 'Youth Athletic Development',
+        sp_date_4: '14/04', sp_name_4: 'Jeremy Dart', sp_cat_4: 'Chapter Director Consultant',
+        sp_date_5: '21/04', sp_name_5: 'Kathryn Green', sp_cat_5: 'Wellbeing Coach',
+        sp_date_6: '28/04', sp_name_6: 'Simon Duncan', sp_cat_6: 'Osteopath',
       };
       const placeholdersBack = {
-        date_1: '28 Mar', event_1: 'Leadership Team Thank You Luncheon',
-        date_2: '15 Apr', event_2: 'Chapter Monthly Social Drinks',
-        date_3: '10 May', event_3: 'All Members do TRAINING in their NEW ROLES',
-        date_4: '22 May', event_4: 'Leadership Team Change-Over',
-        date_5: '1 Jun', event_5: 'BNI National Conference, Manly, Sydney',
-        date_6: '15 Jun', event_6: 'BNI Global Convention Monaco',
-        feature_presenter: 'Graham Bott-Paul', feature_company: 'Compass Financial',
-        next_presenter: 'Sarah Mitchell', next_company: 'Mitchell Realty',
+        date_1: '27 Mar', event_1: 'Leadership Team Thank You Luncheon',
+        date_2: '27 Mar', event_2: 'Chapter Monthly Social Drinks',
+        date_3: '31st Mar', event_3: 'All Members do TRAINING in their NEW ROLES',
+        date_4: '1 April', event_4: 'Leadership Team Change-Over',
+        date_5: '21-23 May', event_5: 'BNI National Conference, Manly, Sydney',
+        date_6: '28-30 Oct', event_6: 'BNI Global Convention Monaco',
+        feature_presenter: 'Anastasia Searle', feature_company: 'GoBloom',
+        next_presenter: 'Lawrence Sukhu', next_company: 'Fit for Purpose Finance',
       };
 
       // Helper: get value or placeholder, returns [value, isPlaceholder]
@@ -1285,9 +1296,9 @@
       const leaders = [
         {role:'President', key:'ldr_pres'}, {role:'Vice President', key:'ldr_vp'},
         {role:'Secretary Treasurer', key:'ldr_sec'}, {role:'Membership Committee', key:'ldr_mem1'},
-        {role:'', key:'ldr_mem2'}, {role:'', key:'ldr_mem3'},
+        {role:'', key:'ldr_mem2'}, {role:'', key:'ldr_mem3'}, {role:'', key:'ldr_mem4'},
         {role:'Visitor Host Coordinator', key:'ldr_vhc'}, {role:'Visitor Hosts', key:'ldr_vh1'},
-        {role:'', key:'ldr_vh2'}, {role:'', key:'ldr_vh3'},
+        {role:'', key:'ldr_vh2'}, {role:'', key:'ldr_vh3'}, {role:'', key:'ldr_vh4'}, {role:'', key:'ldr_vh5'},
         {role:'Education Coordinator', key:'ldr_edu'}, {role:'Mentor Coordinator', key:'ldr_ment'},
         {role:'Mentors', key:'ldr_ment1'}, {role:'', key:'ldr_ment2'},
         {role:'Events & Growth Coordinator', key:'ldr_events'},
@@ -1305,33 +1316,37 @@
       ];
 
       // Render one member row for inside pages
-      const MemberRow = ({ r, num, empty, specialMessage }) => (
-        <tr>
-          <td className="rc-num">{num}</td>
-          {empty ? (
-            <React.Fragment>
-              <td className="rc-member" style={{textAlign:'center', fontSize:9, color:'#999', fontStyle:'italic', verticalAlign:'middle'}}>
-                {specialMessage ? specialMessage : ''}
-              </td>
-              <td className="rc-biz"></td>
-              <td className="rc-cat"></td>
-              <td className="rc-req"></td>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <td className="rc-member">
-                <div className="m-name">{r.member_name}</div>
-                <div className="m-phone">{r.phone || ''}</div>
-                <div className="m-email">{r.email || ''}</div>
-                {r.role && r.role !== 'member' && <div className="m-role">{r.role === 'chapter_admin' ? 'Chapter Admin' : r.role}</div>}
-              </td>
-              <td className="rc-biz">{r.business_name || ''}</td>
-              <td className="rc-cat">{r.business_category || ''}</td>
-              <td className="rc-req"></td>
-            </React.Fragment>
-          )}
-        </tr>
-      );
+      const MemberRow = ({ r, num, empty, specialMessage }) => {
+        const hasRole = r && r.role && r.role !== 'member';
+        const rowBg = hasRole ? '#F5E0E0' : (num % 2 === 0 ? '#f9f9f9' : 'white');
+        return (
+          <tr style={{background: empty ? 'white' : rowBg}}>
+            <td className="rc-num">{num}</td>
+            {empty ? (
+              <React.Fragment>
+                <td className="rc-member" style={{textAlign:'center', fontSize:9, color:'#999', fontStyle:'italic', verticalAlign:'middle'}}>
+                  {specialMessage ? specialMessage : ''}
+                </td>
+                <td className="rc-biz"></td>
+                <td className="rc-cat"></td>
+                <td className="rc-req"></td>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <td className="rc-member">
+                  <div className="m-name">{r.member_name}</div>
+                  <div className="m-phone">{r.phone || ''}</div>
+                  <div className="m-email">{r.email || ''}</div>
+                  {hasRole && <div className="m-role">{r.role === 'chapter_admin' ? 'Chapter Admin' : r.role}</div>}
+                </td>
+                <td className="rc-biz">{r.business_name || ''}</td>
+                <td className="rc-cat">{r.business_category || ''}</td>
+                <td className="rc-req"></td>
+              </React.Fragment>
+            )}
+          </tr>
+        );
+      };
 
       // Build rows for a referral page
       const buildRefPage = (refs, startNum, isRightPage) => {
@@ -1434,22 +1449,22 @@
                           <span className="ts-topbar-logo">BNI</span>
                           <span className="ts-topbar-chapter">{(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}</span>
                           <div className="ts-topbar-right">
-                            <div style={{fontWeight:700}}>{formatDate(frontCover.date || placeholders.date || sheet.week_date)}</div>
-                            <div style={fc('venue')[1] ? {opacity:0.7, fontStyle:'italic'} : {}}>{fc('venue')[0]}</div>
+                            <div style={{fontWeight:700, fontSize:11}}>{formatDate(frontCover.date || placeholders.date || sheet.week_date)}</div>
+                            <div style={{...(fc('venue')[1] ? {opacity:0.7, fontStyle:'italic'} : {}), marginTop:2}}>{fc('venue')[0]}</div>
                             <div style={fc('venue_address')[1] ? {opacity:0.7, fontStyle:'italic'} : {}}>{fc('venue_address')[0]}</div>
                           </div>
                         </div>
 
-                        {/* Welcome line - white bg, RED thin text, large, wide tracking */}
-                        <div style={{background:'white', textAlign:'center', padding:'8px 0', fontSize:18, fontWeight:300, letterSpacing:5, color:'var(--bni-red)', textTransform:'uppercase', borderBottom:'1px solid #ddd'}}>
+                        {/* Welcome line - white bg, RED thin text, large, wide tracking - 10mm = 38px */}
+                        <div style={{background:'white', textAlign:'center', padding:'6px 0', fontSize:18, fontWeight:300, letterSpacing:5, color:'var(--bni-red)', textTransform:'uppercase', borderBottom:'1px solid #ddd', minHeight:38, display:'flex', alignItems:'center', justifyContent:'center'}}>
                           Welcome to BNI {(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}
                         </div>
 
                         {/* Two column body */}
                         <div style={{flex:1, display:'flex', gap:12, padding:'10px 14px 8px', overflow:'hidden', minHeight:0}}>
 
-                          {/* LEFT COLUMN: Agenda, Speaker Roster, single Chapter Photo */}
-                          <div style={{flex:'0 0 42%', display:'flex', flexDirection:'column', gap:10, minHeight:0}}>
+                          {/* LEFT COLUMN: Agenda, Speaker Roster, single Chapter Photo - 77mm of ~200mm = 38.5% */}
+                          <div style={{flex:'0 0 39%', display:'flex', flexDirection:'column', gap:10, minHeight:0}}>
                             {/* Agenda */}
                             <div style={{flex:'0 0 auto'}}>
                               <div className="ts-hdr" style={{marginBottom:4}}>BNI Meeting Agenda</div>
@@ -1486,20 +1501,23 @@
                                 </tbody>
                               </table>
                               <div style={{display:'flex', justifyContent:'space-between', fontSize:7, color:'#999', fontStyle:'italic', padding:'3px 4px', lineHeight:1.2}}>
-                                <span>Speakers please bring a door prize</span>
-                                <span>Enter weekly stats into BNI Connect</span>
+                                <span>Speakers Please Bring a door prize</span>
+                                <span>Members Please enter your weekly STATS into BNI Connect</span>
                               </div>
                             </div>
 
-                            {/* Chapter photo area with overlay */}
-                            <div style={{flex:1, minHeight:80, background:'linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%)', border:'1px solid #ddd', borderRadius:2, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, color:'white', position:'relative', overflow:'hidden'}}>
-                              <div style={{position:'absolute', inset:0, background:'linear-gradient(45deg, rgba(207,32,48,0.15) 0%, rgba(207,32,48,0.05) 100%)'}}></div>
-                              <div style={{position:'relative', zIndex:1, textAlign:'center', fontWeight:700, fontSize:13, letterSpacing:1, lineHeight:1.4}}>WELCOME TO BNI<br/>ROYALS</div>
+                            {/* Chapter photo */}
+                            <div style={{flex:1, minHeight:80, position:'relative', overflow:'hidden', border:'1px solid #ddd'}}>
+                              <img src="images/chapter-photo.jpg" alt="Chapter photo" style={{width:'100%', height:'100%', objectFit:'cover', display:'block'}} />
+                              <div style={{position:'absolute', bottom:0, left:0, right:0, background:'rgba(255,255,255,0.85)', padding:'3px 6px', fontSize:7, color:'#333', lineHeight:1.3}}>
+                                <div>Josephine Raffaele was our door prize winner this week!</div>
+                                <div><strong>Left to right:</strong> Joesphine Raffaele and Tara Bonnitcha</div>
+                              </div>
                             </div>
                           </div>
 
-                          {/* RIGHT COLUMN: Philosophy + Visitor, Leadership, two small photos */}
-                          <div style={{flex:'0 0 56%', display:'flex', flexDirection:'column', gap:10, minHeight:0}}>
+                          {/* RIGHT COLUMN: Philosophy + Visitor, Leadership - 118mm of ~200mm = 59% */}
+                          <div style={{flex:'0 0 59%', display:'flex', flexDirection:'column', gap:10, minHeight:0}}>
                             {/* Philosophy + Visitor side by side */}
                             <div style={{display:'flex', gap:8}}>
                               <div style={{flex:1}}>
@@ -1510,11 +1528,11 @@
                                   ))}
                                 </div>
                               </div>
-                              {/* Visitor Resources - full red box */}
-                              <div style={{flex:'0 0 72px', background:'var(--bni-red)', borderRadius:3, padding:'6px 5px', display:'flex', flexDirection:'column', alignItems:'center', gap:4}}>
-                                <div style={{color:'white', fontSize:10, fontWeight:800, textAlign:'center', lineHeight:1.3}}>Visitor<br/>Resources</div>
-                                <div style={{fontSize:7, color:'rgba(255,255,255,0.85)', textAlign:'center', lineHeight:1.3}}>Thanks for visiting our chapter today, here are some helpful resources.</div>
-                                <div style={{width:48, height:48, background:'white', borderRadius:3, display:'flex', alignItems:'center', justifyContent:'center', fontSize:8, color:'#ccc', marginTop:'auto'}}>QR</div>
+                              {/* Visitor Resources - full red box - 36mm wide */}
+                              <div style={{flex:'0 0 130px', background:'var(--bni-red)', borderRadius:3, padding:'8px 6px', display:'flex', flexDirection:'column', alignItems:'center', gap:4}}>
+                                <div style={{color:'white', fontSize:12, fontWeight:800, textAlign:'center', lineHeight:1.3}}>Visitor<br/>Resources</div>
+                                <div style={{fontSize:8, color:'rgba(255,255,255,0.85)', textAlign:'center', lineHeight:1.3}}>Thanks for visiting our chapter today, here are some helpful resources.</div>
+                                <div style={{width:64, height:64, background:'white', borderRadius:3, display:'flex', alignItems:'center', justifyContent:'center', fontSize:8, color:'#ccc', marginTop:'auto'}}>QR</div>
                               </div>
                             </div>
 
@@ -1539,7 +1557,7 @@
                           </div>
                         </div>
 
-                        <div className="ts-foot">BNI {(() => { const [v] = fc('headline'); const name = v.replace(/^BNI\s*/i, ''); return name; })()}</div>
+                        <div className="ts-foot">BNI Royals</div>
                       </div>
                     </div>
                   )}
@@ -1549,33 +1567,34 @@
                   {(activePage === 'inside_left' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
-                        <div className="ts-topbar">
+                        <div className="ts-topbar" style={{minHeight:'auto', padding:'8px 14px'}}>
                           <span className="ts-topbar-logo">BNI</span>
                           <span className="ts-topbar-chapter">{shortName}</span>
                           <span className="ts-topbar-sub">Member Referral Request</span>
                         </div>
-                        <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden'}}>
-                          <div style={{flex:1, display:'flex', gap:0, overflow:'hidden', minHeight:0}}>
-                            {/* Table on left - 75% width */}
-                            <div style={{flex:'0 0 75%', display:'flex', flexDirection:'column', padding:'0 8px', overflow:'hidden', borderRight:'1px solid #e0e0e0'}}>
-                              <table className="ts-ref" style={{flex:1}}>
-                                <thead>
-                                  <tr>
-                                    <th style={{width:30}}>#</th>
-                                    <th style={{width:'30%'}}>Member/Contact</th>
-                                    <th style={{width:'16%'}}>Business Name</th>
-                                    <th style={{width:'16%'}}>BNI Category</th>
-                                    <th>Referral Request</th>
-                                  </tr>
-                                </thead>
-                                <tbody>{buildRefPage(leftRefs, 1)}</tbody>
-                              </table>
+                        <div style={{flex:1, display:'flex', flexDirection:'column', padding:'0 8px', overflow:'hidden', position:'relative'}}>
+                          <table className="ts-ref" style={{flex:1}}>
+                            <thead>
+                              <tr>
+                                <th style={{width:24}}>#</th>
+                                <th style={{width:'28%'}}>Member/Contact</th>
+                                <th style={{width:'14%'}}>Business Name</th>
+                                <th style={{width:'14%'}}>BNI Category</th>
+                                <th>Referral Request</th>
+                              </tr>
+                            </thead>
+                            <tbody>{buildRefPage(leftRefs, 1)}</tbody>
+                          </table>
+                          {/* Decorative overlay text on right side - positioned over Referral Request column */}
+                          <div style={{position:'absolute', right:0, top:28, width:'22%', height:'calc(100% - 28px)', display:'flex', flexDirection:'column', pointerEvents:'none'}}>
+                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                              <div style={{fontSize:26, fontWeight:800, color:'var(--bni-red)', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Presenting<br/>Today</div>
                             </div>
-                            {/* Sidebar on right - 25% width */}
-                            <div style={{flex:'0 0 25%', display:'flex', flexDirection:'column', gap:6, padding:'8px 6px', alignItems:'center', justifyContent:'flex-start', background:'#fafafa'}}>
-                              <div style={{fontSize:18, fontWeight:800, color:'var(--bni-red)', textAlign:'center', lineHeight:1.2, marginTop:4}}>Presenting<br/>Today</div>
-                              <div style={{fontSize:20, fontWeight:800, color:'#C5A55A', textAlign:'center', lineHeight:1.2}}>Golden<br/>Mic</div>
-                              <div style={{fontSize:10, color:'#A81828', fontWeight:600, textAlign:'center', marginTop:'auto', marginBottom:4}}>I'm new<br/>book at 121</div>
+                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                              <div style={{fontSize:28, fontWeight:800, color:'#C5A55A', textAlign:'center', lineHeight:1.1, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>Golden<br/>Mic</div>
+                            </div>
+                            <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                              <div style={{fontSize:22, color:'#A81828', fontWeight:800, textAlign:'center', lineHeight:1.15, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", opacity:0.85}}>I'm new<br/>book at 121</div>
                             </div>
                           </div>
                         </div>
@@ -1589,7 +1608,7 @@
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
-                        <div className="ts-topbar">
+                        <div className="ts-topbar" style={{minHeight:'auto', padding:'8px 14px'}}>
                           <span className="ts-topbar-logo">BNI</span>
                           <span className="ts-topbar-chapter">{shortName}</span>
                           <span className="ts-topbar-sub">Member Referral Request</span>
@@ -1608,11 +1627,13 @@
                             <tbody>{buildRefPage(rightRefs, PER_PAGE + 1, true)}</tbody>
                           </table>
                           {/* Decorative microphone icons bottom-right */}
-                          <div style={{position:'absolute', bottom:4, right:6, fontSize:12, color:'var(--bni-red)', opacity:0.3}}>
-                            🎤 🎤
+                          <div style={{position:'absolute', bottom:6, right:8, display:'flex', gap:4, opacity:0.2}}>
+                            <img src="images/mic.png" alt="" style={{width:20, height:'auto'}} />
+                            <img src="images/mic.png" alt="" style={{width:24, height:'auto'}} />
+                            <img src="images/mic.png" alt="" style={{width:20, height:'auto'}} />
                           </div>
                         </div>
-                        <div className="ts-foot">1 Referral. 1 One-to-One. 1 CEU. 1 Meeting. 1 Visitor = Power of One</div>
+                        <div className="ts-foot">1 Referral. 1 one-to-one. 1 CEU. 1 Meeting. 1 Visitor. = Power of one</div>
                       </div>
                     </div>
                   )}
@@ -1622,7 +1643,7 @@
                   {(activePage === 'back' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
-                        <div className="ts-topbar" style={{justifyContent:'center'}}>
+                        <div className="ts-topbar" style={{justifyContent:'center', minHeight:'auto', padding:'8px 14px'}}>
                           <span className="ts-topbar-logo">BNI</span>
                           <span className="ts-topbar-chapter">{(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}</span>
                         </div>
@@ -1631,24 +1652,21 @@
                         <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden'}}>
                           <div style={{flex:1, display:'flex', gap:8, padding:'8px 14px 4px', overflow:'hidden'}}>
                             {/* LEFT COLUMN */}
-                            <div style={{flex:'0 0 46%', display:'flex', flexDirection:'column', gap:4, overflow:'hidden'}}>
+                            <div style={{flex:'0 0 46%', display:'flex', flexDirection:'column', gap:3, overflow:'hidden'}}>
                               {/* BNI Podcasts - 4 in a row - MOVE TO TOP */}
                               <div>
                                 <div className="ts-hdr" style={{marginBottom:3}}>BNI Podcasts</div>
                                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:4}}>
                                   {[
-                                    {short:'BNI 20 Secrets\nPodcast', host:'Chris Mutimer\n& Jeremy Dart', color:'#C41230', accent:'#FFD700', eps:2},
-                                    {short:'BNI The\nAustralian Story', host:'Brent Edwards\n& Veronica\nLees-Amato', color:'#1B4D8E', accent:'#fff', eps:2},
-                                    {short:'The Official BNI\nPodcast', host:'Dr. Ivan Misner', color:'#CF2030', accent:'#fff', eps:4},
-                                    {short:'The Power of\nOne Podcast', host:'Tim Roberts', color:'#2D2D2D', accent:'#CF2030', eps:2}
+                                    {img:'images/podcast-auststory.jpg', title:'The Australian Story', host:'Brent Edwards\n& Veronica\nLees-Amato', eps:2},
+                                    {img:'images/podcast-official.png', title:'The Official BNI\nPodcast', host:'BNI Founder\nDr. Ivan Misner', eps:4},
+                                    {img:'images/podcast-powerofone.jpg', title:'The Power of\nOne Podcast', host:'Tim Robert', eps:2},
+                                    {img:'images/podcast-20secrets.png', title:'BNI 20 Secrets\nPodcast', host:'Chris Mutimer\n& Jeremy Dart', eps:2}
                                   ].map((p,i) => (
                                     <div key={i} style={{border:'1px solid #e0e0e0', overflow:'hidden', borderRadius:2, background:'white'}}>
-                                      <div style={{background:p.color, padding:'8px 4px', textAlign:'center', minHeight:45, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-                                        <div style={{color:'white', fontWeight:900, fontSize:13, letterSpacing:1}}>BNI</div>
-                                        <div style={{color: p.accent === '#fff' ? 'rgba(255,255,255,0.8)' : p.accent, fontSize:5.5, fontWeight:600, marginTop:1, textTransform:'uppercase', letterSpacing:0.5, lineHeight:1.2}}>{p.short.split('\n')[0]}</div>
-                                      </div>
+                                      <img src={p.img} alt={p.title} style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
                                       <div style={{padding:'3px 4px 2px', textAlign:'left'}}>
-                                        <div style={{fontWeight:700, fontSize:7, lineHeight:1.2, color:'#333', whiteSpace:'pre-line'}}>{p.short}</div>
+                                        <div style={{fontWeight:700, fontSize:7, lineHeight:1.2, color:'#333', whiteSpace:'pre-line'}}>{p.title}</div>
                                         <div style={{fontSize:6, color:'#666', lineHeight:1.2, marginTop:1}}>Hosted by</div>
                                         <div style={{fontSize:6, color:'#666', lineHeight:1.2, whiteSpace:'pre-line'}}>{p.host}</div>
                                         <div style={{fontSize:6, color:'#999', lineHeight:1.2, marginTop:1}}>{p.eps} Episodes<br/>= 1 CEU</div>
@@ -1707,51 +1725,53 @@
                             </div>
 
                             {/* RIGHT COLUMN */}
-                            <div style={{flex:'0 0 52%', display:'flex', flexDirection:'column', gap:4}}>
-                              {/* Education Notes */}
-                              <div style={{display:'flex', flexDirection:'column', flex:1}}>
+                            <div style={{flex:'0 0 52%', display:'flex', flexDirection:'column', gap:3, overflow:'hidden'}}>
+                              {/* Education Notes - fixed height ~120px */}
+                              <div>
                                 <div className="ts-hdr">Education Notes <span style={{fontWeight:400, fontStyle:'italic', fontSize:9}}>When you learn more, you earn more.</span></div>
-                                <div style={{background:'white', border:'1px solid #ddd', borderTop:'none', overflow:'hidden', flex:1, display:'flex', flexDirection:'column'}}>
-                                  {[...Array(3)].map((_,i) => (
-                                    <div key={i} style={{borderBottom: i < 2 ? '1px solid #e0e0e0' : 'none', flex:1}}></div>
+                                <div style={{background:'white', border:'1px solid #ddd', borderTop:'none', height:100}}>
+                                  {[...Array(4)].map((_,i) => (
+                                    <div key={i} style={{borderBottom:'1px solid #e0e0e0', height:25}}></div>
                                   ))}
                                 </div>
                               </div>
 
-                              {/* Feature Presentation */}
-                              <div style={{display:'flex', flexDirection:'column', flex:1}}>
+                              {/* Feature Presentation - fixed height */}
+                              <div>
                                 <div className="ts-hdr" style={{marginBottom:0}}>Feature Presentation</div>
-                                <div style={{borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd'}}>
-                                  <div style={{padding:'3px 8px', fontSize:10, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
-                                  <div style={{padding:'1px 8px 6px', fontSize:12}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('feature_company')[0]}</span></div>
+                                <div style={{borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', display:'flex', alignItems:'center'}}>
+                                  <div style={{flex:1}}>
+                                    <div style={{padding:'2px 8px', fontSize:9, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
+                                    <div style={{padding:'1px 8px 4px', fontSize:12}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('feature_company')[0]}</span></div>
+                                  </div>
+                                  <img src="images/gobloom-logo.png" alt="GoBloom" style={{width:50, height:'auto', marginRight:6, opacity:0.8}} />
                                 </div>
-                                <div style={{background:'white', borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', overflow:'hidden', flex:1, display:'flex', flexDirection:'column'}}>
-                                  {[...Array(3)].map((_,i) => (
-                                    <div key={i} style={{borderBottom:'1px solid #e0e0e0', flex:1}}></div>
+                                <div style={{background:'white', borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', height:100}}>
+                                  {[...Array(4)].map((_,i) => (
+                                    <div key={i} style={{borderBottom:'1px solid #e0e0e0', height:25}}></div>
                                   ))}
                                 </div>
-                                <div style={{border:'1px solid #d0c0dd', padding:'5px 8px', fontSize:10, lineHeight:1.3, background:'#EDE5F3'}}>
+                                <div style={{border:'1px solid #d0c0dd', padding:'4px 8px', fontSize:10, lineHeight:1.3, background:'#EDE5F3'}}>
                                   <div style={{fontSize:9}}>Next weeks presentation:</div>
                                   <div><span style={{fontWeight:700, color:'var(--bni-red)'}}>{bp('next_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('next_company')[0]}</span></div>
                                 </div>
                               </div>
 
-                              {/* I Have */}
-                              <div style={{display:'flex', flexDirection:'column', flex:1}}>
-                                <div className="ts-hdr">I Have</div>
+                              {/* Referrals & testimonials - grows to fill remaining space */}
+                              <div style={{display:'flex', flexDirection:'column', flex:1, minHeight:0}}>
+                                <div className="ts-hdr">Referrals & testimonials</div>
                                 <div style={{border:'1px solid #ddd', borderTop:'none', flex:1, display:'flex', flexDirection:'column'}}>
-                                  <div style={{padding:'4px 8px', fontSize:11}}>
-                                    <div style={{fontWeight:700, color:'var(--bni-red)', fontSize:12}}>Refer to your BNI Connect App</div>
-                                    <div style={{fontSize:9, color:'#666', fontStyle:'italic'}}>Members Please enter your weekly STATS into the BNI Connect app</div>
-                                  </div>
-                                  {[...Array(3)].map((_,i) => (
-                                    <div key={i} style={{borderTop:'1px solid #e0e0e0', flex:1, marginLeft:8, marginRight:8}}></div>
+                                  {[...Array(4)].map((_,i) => (
+                                    <div key={i} style={{borderBottom: i < 3 ? '1px solid #e0e0e0' : 'none', flex:1, marginLeft:8, marginRight:8}}></div>
                                   ))}
+                                </div>
+                                <div style={{padding:'3px 8px', fontSize:8, color:'#555', borderLeft:'1px solid #ddd', borderRight:'1px solid #ddd', borderBottom:'1px solid #ddd'}}>
+                                  Refer to your BNI Connect App. Members Please enter your weekly STATS into the BNI Connect app
                                 </div>
                               </div>
 
-                              {/* VP Report - MOVED FROM BOTTOM TO RIGHT COLUMN */}
-                              <div style={{flex:0, overflow:'hidden', display:'flex', flexDirection:'column', border:'1px solid #ccc'}}>
+                              {/* VP Report - fixed at bottom */}
+                              <div style={{flexShrink:0, border:'1px solid #ccc'}}>
                                 <div style={{background:'var(--bni-red)', color:'white', fontWeight:700, fontSize:11, padding:'3px 8px', textAlign:'center'}}>Vice President Report</div>
                                 <table style={{width:'100%', borderCollapse:'collapse', tableLayout:'fixed'}}>
                                   <thead>
@@ -1759,7 +1779,7 @@
                                       <th style={{textAlign:'left', width:'40%', padding:'2px 6px', fontSize:8, fontWeight:600, borderBottom:'1px solid #ccc', borderRight:'1px solid #ccc'}}>KPI</th>
                                       <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Last Week<br/>Actual</th>
                                       <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Weekly<br/>Budget</th>
-                                      <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026<br/>per wk avg</th>
+                                      <th style={{padding:'2px 2px', fontSize:7, fontWeight:600, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026 per wk<br/>average</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -2409,7 +2429,7 @@
     // MAIN APP
     function App() {
       // Demo mode: auto-login as admin
-      const demoUser = {id:1, email:'admin@bni.com.au', name:'Ben Marriott', role:'admin', chapter_id:null, chapter_name:null};
+      const demoUser = {id:1, email:'benjamin@cornerstoneandcompass.com', name:'Benjamin Marriott', role:'admin', chapter_id:1, chapter_name:'BNI Royals Kingston'};
       const [user, setUser] = useState(demoUser);
       const [token, setToken] = useState(() => {
         api.token = 'demo-token-1';
