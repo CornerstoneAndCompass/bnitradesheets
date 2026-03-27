@@ -1683,17 +1683,17 @@
                           <span className="ts-topbar-chapter" style={{fontSize:22, letterSpacing:3}}>{(() => { const [v] = fc('headline'); return v.replace(/^BNI\s*/i, ''); })()}</span>
                         </div>
 
-                        {/* MAIN CONTENT - column layout: two-col area + bottom row */}
-                        <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden', padding:'6px 10px 4px'}}>
+                        {/* MAIN CONTENT */}
+                        <div style={{flex:1, display:'flex', flexDirection:'column', overflow:'hidden', padding:'4px 10px 4px'}}>
 
-                          {/* TWO-COLUMN AREA - takes available space */}
-                          <div style={{flex:1, display:'flex', gap:10, minHeight:0}}>
-                            {/* LEFT COLUMN - Podcasts, Dates, Occupations */}
-                            <div style={{flex:'0 0 45%', display:'flex', flexDirection:'column', gap:4}}>
+                          {/* TWO-COLUMN AREA - ~62% of page height */}
+                          <div style={{flex:'7 1 0', display:'flex', gap:12, minHeight:0}}>
+                            {/* LEFT COLUMN 47% - Podcasts, Dates, Occupations */}
+                            <div style={{flex:'0 0 47%', display:'flex', flexDirection:'column', gap:3}}>
                               {/* BNI Podcasts */}
                               <div>
-                                <div className="ts-hdr" style={{marginBottom:3}}>BNI Podcasts</div>
-                                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:4}}>
+                                <div className="ts-hdr" style={{marginBottom:2, fontSize:11}}>BNI Podcasts</div>
+                                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:3}}>
                                   {[
                                     {img:'images/podcast-auststory.jpg', title:'The Australian Story', host:'Brent Edwards\n& Veronica\nLees-Amato', eps:2},
                                     {img:'images/podcast-official.png', title:'The Official BNI\nPodcast', host:'BNI Founder\nDr. Ivan Misner', eps:4},
@@ -1702,11 +1702,11 @@
                                   ].map((p,i) => (
                                     <div key={i} style={{border:'1px solid #e0e0e0', overflow:'hidden', borderRadius:2, background:'white'}}>
                                       <img src={p.img} alt={p.title} style={{width:'100%', aspectRatio:'1', objectFit:'cover', display:'block'}} />
-                                      <div style={{padding:'3px 4px 2px', textAlign:'left'}}>
-                                        <div style={{fontWeight:700, fontSize:7, lineHeight:1.2, color:'#333', whiteSpace:'pre-line'}}>{p.title}</div>
-                                        <div style={{fontSize:6, color:'#666', lineHeight:1.2, marginTop:1}}>Hosted by</div>
-                                        <div style={{fontSize:6, color:'#666', lineHeight:1.2, whiteSpace:'pre-line'}}>{p.host}</div>
-                                        <div style={{fontSize:6, color:'var(--bni-red)', lineHeight:1.2, marginTop:1, textDecoration:'underline'}}>{p.eps} Episodes<br/>= 1 CEU</div>
+                                      <div style={{padding:'2px 3px 1px', textAlign:'left'}}>
+                                        <div style={{fontWeight:700, fontSize:6.5, lineHeight:1.15, color:'#333', whiteSpace:'pre-line'}}>{p.title}</div>
+                                        <div style={{fontSize:5.5, color:'#666', lineHeight:1.15, marginTop:1}}>Hosted by</div>
+                                        <div style={{fontSize:5.5, color:'#666', lineHeight:1.15, whiteSpace:'pre-line'}}>{p.host}</div>
+                                        <div style={{fontSize:5.5, color:'var(--bni-red)', lineHeight:1.15, marginTop:1, textDecoration:'underline'}}>{p.eps} Episodes<br/>= 1 CEU</div>
                                       </div>
                                     </div>
                                   ))}
@@ -1714,29 +1714,29 @@
                               </div>
 
                               {/* Upcoming Dates */}
-                              <div>
-                                <div className="ts-hdr" style={{marginBottom:0}}>Upcoming Dates</div>
-                                <table style={{width:'100%', borderCollapse:'collapse', fontSize:10}}>
+                              <div style={{flex:'1 1 0', minHeight:0}}>
+                                <div className="ts-hdr" style={{marginBottom:0, fontSize:11}}>Upcoming Dates</div>
+                                <table style={{width:'100%', borderCollapse:'collapse', fontSize:9}}>
                                   <thead>
-                                    <tr style={{background:'#F5E0E0'}}>
-                                      <th style={{width:'22%', padding:'3px 6px', fontSize:10, fontWeight:700, textAlign:'left', borderBottom:'1px solid #ddd', textDecoration:'underline'}}>Date</th>
-                                      <th style={{padding:'3px 6px', fontSize:10, fontWeight:700, textAlign:'left', borderBottom:'1px solid #ddd', textDecoration:'underline'}}>Event</th>
+                                    <tr style={{background:'#FBE5E7'}}>
+                                      <th style={{width:'28%', padding:'2px 6px', fontSize:9, fontWeight:700, textAlign:'left', borderBottom:'1px solid #ddd'}}>Date</th>
+                                      <th style={{padding:'2px 6px', fontSize:9, fontWeight:700, textAlign:'left', borderBottom:'1px solid #ddd'}}>Event</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     {[1,2,3,4,5,6].map(i => {
                                       const [dt] = bp('date_'+i);
                                       const [ev] = bp('event_'+i);
-                                      return <tr key={i} style={{background: i === 3 ? '#F5E0E0' : 'white'}}><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight: i === 3 ? 700 : 400, fontSize:10}}>{dt}</td><td style={{padding:'3px 6px', borderBottom:'1px solid #eee', fontWeight: i === 3 ? 700 : 400, fontSize:10}}>{ev}</td></tr>;
+                                      return <tr key={i} style={{background: i % 2 === 0 ? '#FBE5E7' : 'white'}}><td style={{padding:'2px 6px', borderBottom:'1px solid #eee', fontSize:9}}>{dt}</td><td style={{padding:'2px 6px', borderBottom:'1px solid #eee', fontSize:9}}>{ev}</td></tr>;
                                     })}
                                   </tbody>
                                 </table>
                               </div>
 
                               {/* Targeting Occupations */}
-                              <div>
-                                <div className="ts-hdr" style={{marginBottom:0}}>Targeting Occupations</div>
-                                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:9}}>
+                              <div style={{flex:'1 1 0', minHeight:0}}>
+                                <div className="ts-hdr" style={{marginBottom:0, fontSize:11}}>Targeting Occupations</div>
+                                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:8}}>
                                   {[
                                     {l:'Allied Health Professional', r:'Building & Pest Inspector'},
                                     {l:'Occupational Therapist', r:'Hairdresser'},
@@ -1747,90 +1747,90 @@
                                     {l:'Psychologist', r:'Florist'}
                                   ].map((row,i) => (
                                     <React.Fragment key={i}>
-                                      <div style={{padding:'2px 6px', borderBottom:'1px solid #e0e0e0', borderRight:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0', textAlign:'center'}}>{backPage['tgt_l_'+i]||row.l}</div>
-                                      <div style={{padding:'2px 6px', borderBottom:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#F5E0E0', textAlign:'center'}}>{backPage['tgt_r_'+i]||row.r}</div>
+                                      <div style={{padding:'2px 4px', borderBottom:'1px solid #e0e0e0', borderRight:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center'}}>{backPage['tgt_l_'+i]||row.l}</div>
+                                      <div style={{padding:'2px 4px', borderBottom:'1px solid #e0e0e0', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center'}}>{backPage['tgt_r_'+i]||row.r}</div>
                                     </React.Fragment>
                                   ))}
                                 </div>
                               </div>
                             </div>
 
-                            {/* RIGHT COLUMN - Education, Feature, Referrals */}
-                            <div style={{flex:1, display:'flex', flexDirection:'column', gap:4}}>
-                              {/* Education Notes */}
+                            {/* RIGHT COLUMN 47% - Education, Feature, Referrals */}
+                            <div style={{flex:1, display:'flex', flexDirection:'column', gap:3}}>
+                              {/* Education Notes ~14% of page */}
                               <div>
-                                <div style={{color:'var(--bni-red)', fontSize:16, fontWeight:800, padding:'2px 0'}}>Education Notes</div>
-                                <div style={{fontSize:9, color:'#555', marginBottom:2}}>When you learn more, you earn more.</div>
+                                <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, padding:'1px 0'}}>Education Notes</div>
+                                <div style={{fontSize:8, color:'#555', marginBottom:1}}>When you learn more, you earn more.</div>
                                 <div style={{background:'white', border:'1px solid #ddd'}}>
-                                  {[...Array(5)].map((_,i) => (
-                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:20}}></div>
+                                  {[...Array(4)].map((_,i) => (
+                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:16}}></div>
                                   ))}
                                 </div>
                               </div>
 
-                              {/* Feature Presentation */}
-                              <div>
-                                <div style={{display:'flex', alignItems:'flex-start', gap:8}}>
+                              {/* Feature Presentation ~27% of page */}
+                              <div style={{flex:'1.3 1 0', minHeight:0, display:'flex', flexDirection:'column'}}>
+                                <div style={{display:'flex', alignItems:'flex-start', gap:6}}>
                                   <div style={{flex:1}}>
-                                    <div style={{color:'var(--bni-red)', fontSize:16, fontWeight:800, marginBottom:1}}>Feature Presentation</div>
-                                    <div style={{fontSize:9, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
-                                    <div style={{fontSize:14, marginTop:1}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555', fontSize:11}}>{bp('feature_company')[0]}</span></div>
+                                    <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, marginBottom:1}}>Feature Presentation</div>
+                                    <div style={{fontSize:8, color:'#999', fontStyle:'italic'}}>Learn more about:</div>
+                                    <div style={{fontSize:12, marginTop:1}}><span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span> <span style={{color:'#555', fontSize:10}}>{bp('feature_company')[0]}</span></div>
                                   </div>
-                                  <img src="images/gobloom-logo.png" alt="GoBloom" style={{width:65, height:'auto', opacity:0.8, marginTop:2}} />
+                                  <img src="images/gobloom-logo.png" alt="GoBloom" style={{width:55, height:'auto', opacity:0.8, marginTop:2}} />
                                 </div>
-                                <div style={{background:'white', border:'1px solid #ddd', marginTop:2}}>
-                                  {[...Array(4)].map((_,i) => (
-                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:20}}></div>
+                                <div style={{background:'white', border:'1px solid #ddd', marginTop:2, flex:1}}>
+                                  {[...Array(5)].map((_,i) => (
+                                    <div key={i} style={{borderBottom:'1px solid #e8e8e8', height:18}}></div>
                                   ))}
                                 </div>
-                                <div style={{border:'1px solid #ddd', borderTop:'none', padding:'4px 8px', fontSize:10, lineHeight:1.3, background:'white'}}>
-                                  <div style={{fontSize:9}}>Next weeks presentation:</div>
+                                <div style={{border:'1px solid #ddd', borderTop:'none', padding:'3px 6px', fontSize:9, lineHeight:1.3, background:'white'}}>
+                                  <div style={{fontSize:8}}>Next weeks presentation:</div>
                                   <div><span style={{fontWeight:700, color:'var(--bni-red)'}}>{bp('next_presenter')[0]}</span> <span style={{color:'#555'}}>{bp('next_company')[0]}</span></div>
                                 </div>
                               </div>
 
-                              {/* Referrals & testimonials - grows to fill remaining space */}
-                              <div style={{display:'flex', flexDirection:'column', flex:1, minHeight:0}}>
-                                <div style={{color:'var(--bni-red)', fontSize:16, fontWeight:800, padding:'2px 0'}}>Referrals & testimonials</div>
+                              {/* Referrals & testimonials ~21% of page */}
+                              <div style={{display:'flex', flexDirection:'column', flex:'1 1 0', minHeight:0}}>
+                                <div style={{color:'var(--bni-red)', fontSize:14, fontWeight:800, padding:'1px 0'}}>Referrals & testimonials</div>
                                 <div style={{border:'1px solid #ddd', flex:1, display:'flex', flexDirection:'column'}}>
                                   {[...Array(5)].map((_,i) => (
                                     <div key={i} style={{borderBottom: i < 4 ? '1px solid #e8e8e8' : 'none', flex:1}}></div>
                                   ))}
                                 </div>
-                                <div style={{padding:'4px 8px', fontSize:8, color:'#555', border:'1px solid #ddd', borderTop:'none'}}>
-                                  Refer to your BNI Connect App. Members Please enter your weekly STATS into the BNI Connect app
+                                <div style={{padding:'3px 6px', fontSize:7.5, color:'#555', border:'1px solid #ddd', borderTop:'none'}}>
+                                  Refer to your BNI Connect App. Members please enter your weekly STATS into the BNI Connect app
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* BOTTOM ROW - QR (left) + VP Report (right) */}
-                          <div style={{display:'flex', gap:0, flexShrink:0, marginTop:4, alignItems:'stretch'}}>
-                            {/* QR / Facebook */}
-                            <div style={{flex:'0 0 130px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:4, padding:'6px 8px'}}>
-                              <div style={{fontWeight:800, fontSize:16, color:'var(--bni-red)', lineHeight:1.15, textAlign:'center'}}>Scan here<br/>for our<br/>Facebook<br/>page</div>
-                              <div style={{width:60, height:60, background:'white', border:'2px solid var(--bni-red)', borderRadius:2, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'var(--bni-red)', fontWeight:700}}>QR</div>
+                          {/* BOTTOM ROW ~25% of page - QR (14% width) + VP Report (76% width) */}
+                          <div style={{flex:'3 1 0', display:'flex', gap:6, minHeight:0, marginTop:4, alignItems:'stretch'}}>
+                            {/* QR / Facebook - 14% of page width */}
+                            <div style={{flex:'0 0 100px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3, padding:'4px 4px'}}>
+                              <div style={{fontWeight:800, fontSize:12, color:'var(--bni-red)', lineHeight:1.2, textAlign:'center'}}>Scan here<br/>for our<br/>Facebook<br/>page</div>
+                              <div style={{width:55, height:55, background:'white', border:'2px solid var(--bni-red)', borderRadius:2, display:'flex', alignItems:'center', justifyContent:'center', fontSize:8, color:'var(--bni-red)', fontWeight:700}}>QR</div>
                             </div>
 
-                            {/* VP Report */}
-                            <div style={{flex:1}}>
-                              <div className="ts-hdr" style={{fontSize:12, padding:'4px 8px'}}>Vice President Report</div>
+                            {/* VP Report - fills remaining ~76% width */}
+                            <div style={{flex:1, display:'flex', flexDirection:'column', minHeight:0}}>
+                              <div className="ts-hdr" style={{fontSize:11, padding:'3px 8px'}}>Vice President Report</div>
                               <table style={{width:'100%', borderCollapse:'collapse', tableLayout:'fixed', border:'1px solid #ccc'}}>
                                 <thead>
-                                  <tr style={{background:'#F5E0E0'}}>
-                                    <th style={{textAlign:'left', width:'42%', padding:'2px 6px', fontSize:9, fontWeight:700, borderBottom:'1px solid #ccc', borderRight:'1px solid #ccc'}}>KPI</th>
-                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Last Week<br/>Actual</th>
-                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Weekly<br/>Budget</th>
-                                    <th style={{padding:'2px 4px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026 per wk<br/>average</th>
+                                  <tr style={{background:'#FBE5E7'}}>
+                                    <th style={{textAlign:'left', width:'40%', padding:'2px 6px', fontSize:8, fontWeight:700, borderBottom:'1px solid #ccc', borderRight:'1px solid #ccc'}}>KPI</th>
+                                    <th style={{padding:'2px 4px', fontSize:7, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Last Week<br/>Actual</th>
+                                    <th style={{padding:'2px 4px', fontSize:7, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', borderRight:'1px solid #ccc', lineHeight:1.2}}>Weekly<br/>Budget</th>
+                                    <th style={{padding:'2px 4px', fontSize:7, fontWeight:700, borderBottom:'1px solid #ccc', textAlign:'center', lineHeight:1.2}}>2026 per wk<br/>average</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {vpKPIs.map((kpi, i) => (
                                     <tr key={i}>
-                                      <td style={{fontWeight: i < 4 ? 600 : 400, fontSize:9, padding:'2px 6px', borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', lineHeight:1.3}}>{kpi}</td>
-                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
-                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
-                                      <td style={{borderBottom:'1px solid #ddd', padding:'2px 4px', fontSize:9}}></td>
+                                      <td style={{fontWeight: i < 4 ? 600 : 400, fontSize:8, padding:'2px 6px', borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', lineHeight:1.25}}>{kpi}</td>
+                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:8}}></td>
+                                      <td style={{borderBottom:'1px solid #ddd', borderRight:'1px solid #ddd', padding:'2px 4px', fontSize:8}}></td>
+                                      <td style={{borderBottom:'1px solid #ddd', padding:'2px 4px', fontSize:8}}></td>
                                     </tr>
                                   ))}
                                 </tbody>
