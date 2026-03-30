@@ -1540,18 +1540,17 @@
                   {(activePage === 'inside_left' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_left')}}>
-                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2408 h:3021 */}
+                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2408 h:3021
+                             Column widths from IDML: #=77px, Member=740px, Business=375px, Category=426px, Request=744px (total=2362px) */}
                         <div style={{position:'absolute', top:443, left:152, width:2408, height:3021, display:'flex', flexDirection:'column'}}>
-                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
-                            <thead style={{display:'none'}}>
-                              <tr>
-                                <th style={{width:70}}></th>
-                                <th style={{width:'26%'}}></th>
-                                <th style={{width:'14%'}}></th>
-                                <th style={{width:'14%'}}></th>
-                                <th style={{width:'26%'}}></th>
-                              </tr>
-                            </thead>
+                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28, tableLayout:'fixed'}}>
+                            <colgroup>
+                              <col style={{width:77}} />
+                              <col style={{width:740}} />
+                              <col style={{width:375}} />
+                              <col style={{width:426}} />
+                              <col style={{width:744}} />
+                            </colgroup>
                             <tbody>{buildRefPage(leftRefs, 1)}</tbody>
                           </table>
                         </div>
@@ -1590,18 +1589,17 @@
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_right')}}>
-                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2402 h:2992 */}
+                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2402 h:2992
+                             Column widths from IDML: #=77px, Member=740px, Business=375px, Category=426px, Request=744px */}
                         <div style={{position:'absolute', top:443, left:152, width:2402, height:2992, display:'flex', flexDirection:'column'}}>
-                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
-                            <thead style={{display:'none'}}>
-                              <tr>
-                                <th style={{width:70}}></th>
-                                <th style={{width:'26%'}}></th>
-                                <th style={{width:'14%'}}></th>
-                                <th style={{width:'14%'}}></th>
-                                <th style={{width:'26%'}}></th>
-                              </tr>
-                            </thead>
+                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28, tableLayout:'fixed'}}>
+                            <colgroup>
+                              <col style={{width:77}} />
+                              <col style={{width:740}} />
+                              <col style={{width:375}} />
+                              <col style={{width:426}} />
+                              <col style={{width:744}} />
+                            </colgroup>
                             <tbody>{buildRefPage(rightRefs, PER_PAGE + 1, true)}</tbody>
                           </table>
                         </div>
