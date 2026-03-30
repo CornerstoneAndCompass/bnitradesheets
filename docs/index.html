@@ -151,8 +151,8 @@
     /* ===== TRADE SHEET SYSTEM ===== */
     .ts-editor { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
     .ts-canvas { background: #c8c8c8; border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: flex-start; justify-content: center; min-height: 700px; overflow: auto; }
-    .ts-scale-wrap { width: 437px; height: 618px; overflow: hidden; flex-shrink: 0; }
-    .ts-a4 { width: 794px; height: 1123px; transform: scale(0.55); transform-origin: top left; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.35); font-family: 'Helvetica Neue LT Std', 'Helvetica Neue', 'Roboto', Helvetica, Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
+    .ts-scale-wrap { width: 437px; height: 605px; overflow: hidden; flex-shrink: 0; }
+    .ts-a4 { width: 2665px; height: 3692px; transform: scale(0.164); transform-origin: top left; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.35); font-family: 'Helvetica Neue LT Std', 'Helvetica Neue', 'Roboto', Helvetica, Arial, sans-serif; position: relative; overflow: hidden; }
     .ts-panel { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid #E5E7EB; overflow: hidden; }
 
     /* Top red banner */
@@ -177,20 +177,20 @@
     .ts-lead td { padding: 4px 6px; border: 1px solid #ddd; }
     .ts-lead td:first-child { font-weight: 700; width: 45%; background: #f9f9f9; }
 
-    /* Referral table - fills full page height, matches IDML specs */
-    .ts-ref { width: 100%; border-collapse: collapse; font-size: 10px; line-height: 1.15; }
-    .ts-ref th { padding: 4px; text-align: center; font-weight: 700; font-size: 10px; border-bottom: 1px solid #999; background: white; color: #333; }
-    .ts-ref td { border-bottom: 1px solid #ddd; vertical-align: middle; padding: 4px; }
+    /* Referral table - fills full page height, source-image scale (2665x3692) */
+    .ts-ref { width: 100%; border-collapse: collapse; font-size: 28px; line-height: 1.15; }
+    .ts-ref th { padding: 12px; text-align: center; font-weight: 700; font-size: 28px; border-bottom: 3px solid #999; background: white; color: #333; }
+    .ts-ref td { border-bottom: 2px solid #ddd; vertical-align: middle; padding: 10px; }
     .ts-ref tr:nth-child(even) td { background: transparent; }
-    .ts-ref .rc-num { width: 22px; text-align: center; font-weight: 700; font-size: 10px; vertical-align: middle; }
+    .ts-ref .rc-num { width: 70px; text-align: center; font-weight: 700; font-size: 30px; vertical-align: middle; }
     .ts-ref .rc-member { text-align: center; }
-    .ts-ref .rc-member .m-name { font-weight: 700; font-size: 10px; color: #111; line-height: 1.15; }
-    .ts-ref .rc-member .m-phone { font-size: 8px; color: #333; line-height: 1.15; }
-    .ts-ref .rc-member .m-email { font-size: 8px; color: #555; line-height: 1.15; word-break: break-all; letter-spacing: 0.3px; }
-    .ts-ref .rc-member .m-role { font-size: 8px; color: var(--bni-red); font-weight: 400; line-height: 1.15; font-style: italic; }
-    .ts-ref .rc-biz { font-size: 10px; text-align: center; vertical-align: middle; }
-    .ts-ref .rc-cat { font-size: 10px; text-align: center; vertical-align: middle; }
-    .ts-ref .rc-req { border-left: 1px solid #ccc; }
+    .ts-ref .rc-member .m-name { font-weight: 700; font-size: 30px; color: #111; line-height: 1.15; }
+    .ts-ref .rc-member .m-phone { font-size: 24px; color: #333; line-height: 1.15; }
+    .ts-ref .rc-member .m-email { font-size: 22px; color: #555; line-height: 1.15; word-break: break-all; letter-spacing: 0.5px; }
+    .ts-ref .rc-member .m-role { font-size: 22px; color: var(--bni-red); font-weight: 400; line-height: 1.15; font-style: italic; }
+    .ts-ref .rc-biz { font-size: 26px; text-align: center; vertical-align: middle; }
+    .ts-ref .rc-cat { font-size: 26px; text-align: center; vertical-align: middle; }
+    .ts-ref .rc-req { border-left: 3px solid #ccc; }
 
     /* VP Report table */
     .ts-vp { width: 100%; border-collapse: collapse; font-size: 9px; line-height: 1.3; border: 1px solid #ccc; }
@@ -1119,7 +1119,7 @@
       const [referrals, setReferrals] = useState([]);
       const [frontCover, setFrontCover] = useState({});
       const [backPage, setBackPage] = useState({});
-      const [zoom, setZoom] = useState(0.55);
+      const [zoom, setZoom] = useState(0.164);
       const [printing, setPrinting] = useState(false);
       const [showTemplate, setShowTemplate] = useState(false);
 
@@ -1134,7 +1134,7 @@
         colorAdjust: 'exact',
       });
       const [printOrder, setPrintOrder] = useState(null); // null | {orderNumber, date}
-      const BASE_W = 794, BASE_H = 1123;
+      const BASE_W = 2665, BASE_H = 3692;
       const wrapW = Math.round(BASE_W * zoom);
       const wrapH = Math.round(BASE_H * zoom);
 
@@ -1467,10 +1467,10 @@
                     <button key={p.key} className={`btn ${activePage===p.key?'btn-primary':'btn-secondary'} btn-sm`} onClick={() => setActivePage(p.key)}>{p.label}</button>
                   ))}
                   <div style={{marginLeft:16, display:'flex', alignItems:'center', gap:4, background:'white', borderRadius:6, padding:'4px 8px', border:'1px solid #E5E7EB'}}>
-                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.max(0.25, Math.round((z - 0.1)*100)/100))}>-</button>
-                    <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(zoom*100)}%</span>
-                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.min(1.5, Math.round((z + 0.1)*100)/100))}>+</button>
-                    <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setZoom(0.55)}>Reset</button>
+                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.max(0.08, Math.round((z - 0.03)*1000)/1000))}>-</button>
+                    <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(zoom*1000)/10}%</span>
+                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.min(0.5, Math.round((z + 0.03)*1000)/1000))}>+</button>
+                    <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setZoom(0.164)}>Reset</button>
                     <button className={`btn btn-sm ${showTemplate ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTemplate(t => !t)}>{showTemplate ? 'Overlays ON' : 'Overlays'}</button>
                   </div>
                 </div>
@@ -1481,31 +1481,19 @@
                   {(activePage === 'front' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('front')}}>
-                        {/* Date overlay - top right of header */}
-                        <div style={{position:'absolute', top:16, right:14, width:210, height:16, background:'white', display:'flex', alignItems:'center', justifyContent:'flex-end', fontSize:11, fontWeight:700, paddingRight:8, overflow:'hidden'}}>
+                        {/* Date overlay - top right of header bar */}
+                        <div style={{position:'absolute', top:95, left:1600, width:950, height:70, display:'flex', alignItems:'center', justifyContent:'center', fontSize:40, fontWeight:600, color:'white', overflow:'hidden', pointerEvents:'none'}}>
                           {formatDate(frontCover.date || placeholders.date || sheet.week_date)}
                         </div>
 
-                        {/* Venue overlay - top right of header, below date */}
-                        <div style={{position:'absolute', top:34, right:14, width:210, height:28, background:'white', padding:'2px 8px', fontSize:10, overflow:'hidden', lineHeight:1.3}}>
-                          <div style={{fontWeight:600}}>{fc('venue')[0]}</div>
-                          <div style={{fontSize:9, color:'#555'}}>{fc('venue_address')[0]}</div>
+                        {/* Venue overlay - below date in header */}
+                        <div style={{position:'absolute', top:190, left:1550, width:1020, height:140, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', color:'white', overflow:'hidden', pointerEvents:'none'}}>
+                          <div style={{fontSize:34, fontWeight:500}}>{fc('venue')[0]}</div>
+                          <div style={{fontSize:28, opacity:0.95}}>{fc('venue_address')[0]}</div>
                         </div>
 
-                        {/* Leadership Team names - right column overlay */}
-                        <div style={{position:'absolute', left:545, top:432, width:230, height:380, fontSize:10, lineHeight:1.4}}>
-                          {leaders.map((l, i) => {
-                            const [val] = fc(l.key);
-                            return (
-                              <div key={i} style={{height:22, display:'flex', alignItems:'center', background:'white', paddingLeft:4, overflow:'hidden', marginBottom:2}}>
-                                {val}
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Speaker Roster dates and names - left column */}
-                        <div style={{position:'absolute', left:18, top:520, width:280, height:192}}>
+                        {/* Speaker Roster data rows - left column */}
+                        <div style={{position:'absolute', left:97, top:1838, width:960, fontSize:28}}>
                           {[1,2,3,4,5,6].map(i => {
                             const spMemberId = frontCover['sp_member_'+i];
                             const spMember = spMemberId ? members.find(m => m.id === parseInt(spMemberId)) : null;
@@ -1514,19 +1502,31 @@
                             const nm = spMember ? spMember.name : (frontCover['sp_name_'+i] || placeholders['sp_name_'+i] || '');
                             const ct = spMember ? spMember.business_category : (frontCover['sp_cat_'+i] || placeholders['sp_cat_'+i] || '');
                             return (
-                              <div key={i} style={{height:32, marginBottom:0, background:'white', display:'flex', gap:8, paddingTop:2, paddingBottom:2, fontSize:9, overflow:'hidden'}}>
-                                <div style={{width:80, paddingLeft:4, paddingTop:2, fontWeight:600}}>{dt}</div>
-                                <div style={{flex:1, paddingTop:2}}>
-                                  <div style={{fontWeight:600, lineHeight:1.2}}>{nm}</div>
-                                  {ct ? <div style={{color:'var(--bni-red)', fontSize:8, lineHeight:1}}>{ct}</div> : null}
+                              <div key={i} style={{height:108, display:'flex', gap:16, alignItems:'center', background: i % 2 === 0 ? '#f5f5f5' : 'white', overflow:'hidden'}}>
+                                <div style={{width:240, paddingLeft:20, fontWeight:600, fontSize:28}}>{dt}</div>
+                                <div style={{flex:1}}>
+                                  <div style={{fontWeight:600, lineHeight:1.2, fontSize:28}}>{nm}</div>
+                                  {ct ? <div style={{color:'var(--bni-red)', fontSize:22, lineHeight:1.1}}>{ct}</div> : null}
                                 </div>
                               </div>
                             );
                           })}
                         </div>
 
+                        {/* Leadership Team names - right column, name values only */}
+                        <div style={{position:'absolute', left:1830, top:2350, width:730, fontSize:28}}>
+                          {leaders.map((l, i) => {
+                            const [val] = fc(l.key);
+                            return (
+                              <div key={i} style={{height:68, display:'flex', alignItems:'center', background:'white', paddingLeft:14, overflow:'hidden', borderBottom:'1px solid #e5e5e5'}}>
+                                {val}
+                              </div>
+                            );
+                          })}
+                        </div>
+
                         {/* Photo caption overlay */}
-                        <div style={{position:'absolute', left:18, top:974, width:285, height:40, background:'rgba(255,255,255,0.9)', padding:'3px 6px', fontSize:7, color:'#333', lineHeight:1.3, overflow:'hidden'}}>
+                        <div style={{position:'absolute', left:97, top:3230, width:960, height:135, background:'rgba(255,255,255,0.88)', padding:'10px 20px', fontSize:22, color:'#333', lineHeight:1.3, overflow:'hidden'}}>
                           <div>Josephine Raffaele was our door prize winner this week!</div>
                           <div><strong>Left to right:</strong> Josephine Raffaele and Tara Bonnitcha</div>
                         </div>
@@ -1539,16 +1539,16 @@
                   {(activePage === 'inside_left' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_left')}}>
-                        {/* Member table with transparent backgrounds to show PDF design */}
-                        <div style={{position:'absolute', top:68, left:14, right:14, bottom:50, display:'flex', flexDirection:'column'}}>
-                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%'}}>
+                        {/* Member table positioned over PDF table area */}
+                        <div style={{position:'absolute', top:445, left:55, right:55, bottom:180, display:'flex', flexDirection:'column'}}>
+                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
                             <thead style={{display:'none'}}>
                               <tr>
-                                <th style={{width:22, textAlign:'center'}}></th>
-                                <th style={{width:'26%'}}>Member/Contact</th>
-                                <th style={{width:'14%'}}>Business Name</th>
-                                <th style={{width:'14%'}}>BNI Category</th>
-                                <th style={{width:'26%'}}>Referral Request</th>
+                                <th style={{width:70}}></th>
+                                <th style={{width:'26%'}}></th>
+                                <th style={{width:'14%'}}></th>
+                                <th style={{width:'14%'}}></th>
+                                <th style={{width:'26%'}}></th>
                               </tr>
                             </thead>
                             <tbody>{buildRefPage(leftRefs, 1)}</tbody>
@@ -1557,25 +1557,23 @@
 
                         {/* Decorative overlay text - positioned by designated member rows */}
                         {(() => {
-                          const rowH = 100 / PER_PAGE; // percentage height per row
-                          const headerH = 68; // header area height in px
-                          const bodyH = 1123 - headerH - 50; // total table height in px
+                          const rowH = 100 / PER_PAGE;
+                          const tableTop = 445;
+                          const tableH = 3692 - 180 - tableTop;
                           const overlays = [
-                            {key:'presenting_today', label:'Presenting\nToday', color:'white', size:19, tracking:-0.5},
-                            {key:'golden_mic', label:'Golden\nMic', color:'white', size:24, tracking:0.3},
-                            {key:'im_new', label:"I'm new\nbook at 121", color:'white', size:24, tracking:0.3}
+                            {key:'presenting_today', label:'Presenting\nToday', color:'white', size:60, tracking:-0.5},
+                            {key:'golden_mic', label:'Golden\nMic', color:'white', size:75, tracking:0.3},
+                            {key:'im_new', label:"I'm new\nbook a 121", color:'white', size:75, tracking:0.3}
                           ];
-                          // Default positions (percentage from top) if no member assigned
                           const defaults = [25, 50, 75];
                           return (
-                            <div style={{position:'absolute', right:14, top:headerH, width:213, height:bodyH, pointerEvents:'none'}}>
+                            <div style={{position:'absolute', right:55, top:tableTop, width:680, height:tableH, pointerEvents:'none'}}>
                               {overlays.map((o, idx) => {
                                 const memberNum = parseInt(frontCover[o.key]);
-                                // Position at the member's row, or default spread
                                 const topPct = memberNum ? ((memberNum - 1) * rowH) + (rowH * 0.5) : defaults[idx];
                                 return (
-                                  <div key={o.key} style={{position:'absolute', top:`${topPct}%`, left:0, right:0, transform:'translateY(-50%)', display:'flex', alignItems:'center', justifyContent:'center', padding:'8px 0'}}>
-                                    <div style={{fontSize:o.size, fontWeight:900, color:o.color, textAlign:'center', lineHeight:1.05, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", letterSpacing:o.tracking||0, whiteSpace:'pre-line', textShadow:'0 0 3px rgba(0,0,0,0.15)'}}>{o.label}</div>
+                                  <div key={o.key} style={{position:'absolute', top:`${topPct}%`, left:0, right:0, transform:'translateY(-50%)', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px 0'}}>
+                                    <div style={{fontSize:o.size, fontWeight:900, color:o.color, textAlign:'center', lineHeight:1.05, fontFamily:"'Helvetica Neue', Helvetica, Arial, sans-serif", letterSpacing:o.tracking||0, whiteSpace:'pre-line', textShadow:'0 0 8px rgba(0,0,0,0.15)'}}>{o.label}</div>
                                   </div>
                                 );
                               })}
@@ -1591,16 +1589,16 @@
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_right')}}>
-                        {/* Member table with transparent backgrounds to show PDF design */}
-                        <div style={{position:'absolute', top:68, left:14, right:14, bottom:50, display:'flex', flexDirection:'column'}}>
-                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%'}}>
+                        {/* Member table positioned over PDF table area */}
+                        <div style={{position:'absolute', top:445, left:55, right:55, bottom:180, display:'flex', flexDirection:'column'}}>
+                          <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
                             <thead style={{display:'none'}}>
                               <tr>
-                                <th style={{width:22, textAlign:'center'}}></th>
-                                <th style={{width:'26%'}}>Member/Contact</th>
-                                <th style={{width:'14%'}}>Business Name</th>
-                                <th style={{width:'14%'}}>BNI Category</th>
-                                <th style={{width:'26%'}}>Referral Request</th>
+                                <th style={{width:70}}></th>
+                                <th style={{width:'26%'}}></th>
+                                <th style={{width:'14%'}}></th>
+                                <th style={{width:'14%'}}></th>
+                                <th style={{width:'26%'}}></th>
                               </tr>
                             </thead>
                             <tbody>{buildRefPage(rightRefs, PER_PAGE + 1, true)}</tbody>
@@ -1614,26 +1612,26 @@
                   {/* ========== BACK PAGE ========== */}
                   {(activePage === 'back' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
-                      <div className="ts-a4" style={{transform:`scale(${zoom})`, display:'block', position:'relative', ...pageBgStyle('back')}}>
+                      <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('back')}}>
 
-                        {/* Upcoming Dates data rows - covers PDF baked-in text */}
-                        <div style={{position:'absolute', left:60, top:346, width:335, fontSize:9}}>
+                        {/* Upcoming Dates data rows */}
+                        <div style={{position:'absolute', left:200, top:1130, width:1100, fontSize:28}}>
                           {[1,2,3,4,5,6].map(i => {
                             const [dt] = bp('date_'+i);
                             const [ev] = bp('event_'+i);
                             const isHighlight = backPage['date_highlight'] === String(i);
                             return (
-                              <div key={i} style={{display:'flex', height:24, alignItems:'center', background: isHighlight ? '#FBE5E7' : 'white'}}>
-                                <div style={{width:75, paddingLeft:4, fontWeight: isHighlight ? 700 : 400}}>{dt}</div>
-                                <div style={{flex:1, paddingLeft:4, fontWeight: isHighlight ? 700 : 400}}>{ev}</div>
+                              <div key={i} style={{display:'flex', height:78, alignItems:'center', background: isHighlight ? '#FBE5E7' : 'white'}}>
+                                <div style={{width:280, paddingLeft:16, fontWeight: isHighlight ? 700 : 400}}>{dt}</div>
+                                <div style={{flex:1, paddingLeft:16, fontWeight: isHighlight ? 700 : 400}}>{ev}</div>
                               </div>
                             );
                           })}
                         </div>
 
-                        {/* Targeting Occupations data - covers PDF baked-in text */}
-                        <div style={{position:'absolute', left:20, top:590, width:368}}>
-                          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:9}}>
+                        {/* Targeting Occupations data */}
+                        <div style={{position:'absolute', left:97, top:1980, width:1200}}>
+                          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:26}}>
                             {[
                               {l:'Allied Health Professional', r:'Building & Pest Inspector'},
                               {l:'Occupational Therapist', r:'Hairdresser'},
@@ -1644,21 +1642,21 @@
                               {l:'Psychologist', r:'Florist'}
                             ].map((row,i) => (
                               <React.Fragment key={i}>
-                                <div style={{padding:'3px 6px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_l_'+i]||row.l}</div>
-                                <div style={{padding:'3px 6px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_r_'+i]||row.r}</div>
+                                <div style={{padding:'8px 16px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_l_'+i]||row.l}</div>
+                                <div style={{padding:'8px 16px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_r_'+i]||row.r}</div>
                               </React.Fragment>
                             ))}
                           </div>
                         </div>
 
-                        {/* Feature Presenter name overlay - covers PDF baked-in presenter */}
-                        <div style={{position:'absolute', left:408, top:326, width:260, height:20, background:'white', display:'flex', alignItems:'center', fontSize:13, overflow:'hidden'}}>
-                          <span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span>&nbsp;<span style={{color:'#555', fontSize:11}}>{bp('feature_company')[0]}</span>
+                        {/* Feature Presenter name overlay */}
+                        <div style={{position:'absolute', left:1400, top:1060, width:900, height:65, background:'white', display:'flex', alignItems:'center', fontSize:40, overflow:'hidden'}}>
+                          <span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span>{'\u00A0'}<span style={{color:'#555', fontSize:34}}>{bp('feature_company')[0]}</span>
                         </div>
 
                         {/* Next week presenter overlay */}
-                        <div style={{position:'absolute', left:408, top:549, width:280, height:18, background:'white', display:'flex', alignItems:'center', fontSize:10, overflow:'hidden'}}>
-                          <span style={{fontWeight:700, color:'var(--bni-red)', fontSize:11}}>{bp('next_presenter')[0]}</span>&nbsp;<span style={{color:'#555'}}>{bp('next_company')[0]}</span>
+                        <div style={{position:'absolute', left:1400, top:1830, width:950, height:60, background:'white', display:'flex', alignItems:'center', fontSize:34, overflow:'hidden'}}>
+                          <span style={{fontWeight:700, color:'var(--bni-red)', fontSize:36}}>{bp('next_presenter')[0]}</span>{'\u00A0'}<span style={{color:'#555', fontSize:30}}>{bp('next_company')[0]}</span>
                         </div>
 
                       </div>
