@@ -1540,8 +1540,8 @@
                   {(activePage === 'inside_left' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_left')}}>
-                        {/* Member table positioned over PDF table area */}
-                        <div style={{position:'absolute', top:445, left:55, right:55, bottom:180, display:'flex', flexDirection:'column'}}>
+                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2408 h:3021 */}
+                        <div style={{position:'absolute', top:443, left:152, width:2408, height:3021, display:'flex', flexDirection:'column'}}>
                           <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
                             <thead style={{display:'none'}}>
                               <tr>
@@ -1559,8 +1559,8 @@
                         {/* Decorative overlay text - positioned by designated member rows */}
                         {(() => {
                           const rowH = 100 / PER_PAGE;
-                          const tableTop = 445;
-                          const tableH = 3692 - 180 - tableTop;
+                          const tableTop = 443;
+                          const tableH = 3021;
                           const overlays = [
                             {key:'presenting_today', label:'Presenting\nToday', color:'white', size:60, tracking:-0.5},
                             {key:'golden_mic', label:'Golden\nMic', color:'white', size:75, tracking:0.3},
@@ -1568,7 +1568,7 @@
                           ];
                           const defaults = [25, 50, 75];
                           return (
-                            <div style={{position:'absolute', right:55, top:tableTop, width:680, height:tableH, pointerEvents:'none'}}>
+                            <div style={{position:'absolute', left:152, top:tableTop, width:2408, height:tableH, pointerEvents:'none'}}>
                               {overlays.map((o, idx) => {
                                 const memberNum = parseInt(frontCover[o.key]);
                                 const topPct = memberNum ? ((memberNum - 1) * rowH) + (rowH * 0.5) : defaults[idx];
@@ -1590,8 +1590,8 @@
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_right')}}>
-                        {/* Member table positioned over PDF table area */}
-                        <div style={{position:'absolute', top:445, left:55, right:55, bottom:180, display:'flex', flexDirection:'column'}}>
+                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2402 h:2992 */}
+                        <div style={{position:'absolute', top:443, left:152, width:2402, height:2992, display:'flex', flexDirection:'column'}}>
                           <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28}}>
                             <thead style={{display:'none'}}>
                               <tr>
@@ -1615,24 +1615,44 @@
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('back')}}>
 
-                        {/* Upcoming Dates data rows */}
-                        <div style={{position:'absolute', left:200, top:1190, width:1100, fontSize:28}}>
+                        {/* === UPCOMING DATES data rows === InDesign: frame left:152 top:1091 w:1169 h:741
+                             Row0=header(94px) Row1=colHeaders(83px) Rows2-7=data. Col0=date(313px) Col1=event(839px)
+                             Data starts at 1091+94+83=1268. Row heights: 89,89,113,89,89,89 */}
+                        <div style={{position:'absolute', left:152, top:1268, width:1152, fontSize:28, overflow:'hidden', zIndex:2}}>
                           {[1,2,3,4,5,6].map(i => {
                             const [dt] = bp('date_'+i);
                             const [ev] = bp('event_'+i);
                             const isHighlight = backPage['date_highlight'] === String(i);
+                            const rowH = i === 3 ? 113 : 89;
                             return (
-                              <div key={i} style={{display:'flex', height:78, alignItems:'center', background: isHighlight ? '#FBE5E7' : 'white'}}>
-                                <div style={{width:280, paddingLeft:16, fontWeight: isHighlight ? 700 : 400}}>{dt}</div>
+                              <div key={i} style={{display:'flex', height:rowH, alignItems:'center', background: isHighlight ? '#FBE5E7' : 'white', overflow:'hidden'}}>
+                                <div style={{width:313, paddingLeft:16, fontWeight: isHighlight ? 700 : 400}}>{dt}</div>
                                 <div style={{flex:1, paddingLeft:16, fontWeight: isHighlight ? 700 : 400}}>{ev}</div>
                               </div>
                             );
                           })}
                         </div>
 
-                        {/* Targeting Occupations data */}
-                        <div style={{position:'absolute', left:97, top:1980, width:1200}}>
-                          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:0, fontSize:26}}>
+                        {/* === FEATURE PRESENTER overlay === InDesign: frame left:1362 top:986 w:1169 h:955
+                             Row0=header(196px) Row1=name(130px) Row2=company(130px) Row3=gap(130px) Row4=nextLabel(130px) Row5=nextName(134px)
+                             Feature name area: top=986+196=1182 h=260. Next presenter: top=986+196+130+130+130=1572 h=264 */}
+                        <div style={{position:'absolute', left:1362, top:1182, width:1169, height:260, background:'#F1F6ED', zIndex:2, display:'flex', flexDirection:'column', justifyContent:'center', paddingLeft:16, overflow:'hidden'}}>
+                          <div style={{fontSize:36, fontWeight:700}}>{bp('feature_presenter')[0]}</div>
+                          <div style={{fontSize:30, color:'#555', marginTop:4}}>{bp('feature_company')[0]}</div>
+                        </div>
+
+                        {/* === NEXT WEEK PRESENTER overlay === top=1572 h=264 */}
+                        <div style={{position:'absolute', left:1362, top:1572, width:1169, height:264, background:'white', zIndex:2, display:'flex', flexDirection:'column', justifyContent:'center', paddingLeft:16, overflow:'hidden'}}>
+                          <div style={{fontSize:28, color:'#666', marginBottom:8}}>Next weeks presentation:</div>
+                          <div><span style={{fontWeight:700, color:'var(--bni-red)', fontSize:36}}>{bp('next_presenter')[0]}</span></div>
+                          <div style={{fontSize:28, color:'#555', marginTop:4}}>{bp('next_company')[0]}</div>
+                        </div>
+
+                        {/* === TARGETING OCCUPATIONS === InDesign: frame left:152 top:1862 w:1154 h:675
+                             Row0=header(94px) Rows1-7=data(83px each). 2 cols(576px each)
+                             Data starts at 1862+94=1956 */}
+                        <div style={{position:'absolute', left:152, top:1956, width:1152, zIndex:2}}>
+                          <div style={{display:'grid', gridTemplateColumns:'576px 576px', gap:0, fontSize:26}}>
                             {[
                               {l:'Allied Health Professional', r:'Building & Pest Inspector'},
                               {l:'Occupational Therapist', r:'Hairdresser'},
@@ -1643,21 +1663,11 @@
                               {l:'Psychologist', r:'Florist'}
                             ].map((row,i) => (
                               <React.Fragment key={i}>
-                                <div style={{padding:'8px 16px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_l_'+i]||row.l}</div>
-                                <div style={{padding:'8px 16px', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3}}>{backPage['tgt_r_'+i]||row.r}</div>
+                                <div style={{height:83, display:'flex', alignItems:'center', justifyContent:'center', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3, padding:'0 8px'}}>{backPage['tgt_l_'+i]||row.l}</div>
+                                <div style={{height:83, display:'flex', alignItems:'center', justifyContent:'center', background: i % 2 === 0 ? 'white' : '#FBE5E7', textAlign:'center', lineHeight:1.3, padding:'0 8px'}}>{backPage['tgt_r_'+i]||row.r}</div>
                               </React.Fragment>
                             ))}
                           </div>
-                        </div>
-
-                        {/* Feature Presenter name overlay - covers template text at y=1070-1164 */}
-                        <div style={{position:'absolute', left:1370, top:1048, width:1230, height:125, background:'#F1F6ED', zIndex:5, display:'flex', alignItems:'center', paddingLeft:10, fontSize:36, overflow:'hidden'}}>
-                          <span style={{fontWeight:700}}>{bp('feature_presenter')[0]}</span>{'\u00A0'}<span style={{color:'#555', fontSize:30}}>{bp('feature_company')[0]}</span>
-                        </div>
-
-                        {/* Next week presenter overlay - covers template text y=1840-1960 */}
-                        <div style={{position:'absolute', left:1370, top:1838, width:1230, height:165, background:'white', zIndex:5, display:'flex', alignItems:'flex-start', paddingLeft:10, paddingTop:15, fontSize:34, overflow:'hidden'}}>
-                          <span style={{fontWeight:700, color:'var(--bni-red)', fontSize:36}}>{bp('next_presenter')[0]}</span>{'\u00A0'}<span style={{color:'#555', fontSize:30}}>{bp('next_company')[0]}</span>
                         </div>
 
                       </div>
