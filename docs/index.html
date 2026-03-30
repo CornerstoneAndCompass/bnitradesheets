@@ -256,6 +256,7 @@
     /* Print styles for trade sheet - 216x303mm (A4 + 3mm bleed) */
     .print-page-break { display: none; }
 
+    /* print-mode: JS-applied class for basic layout reset (no bleed adjustments here) */
     .print-mode *, .print-mode *::before, .print-mode *::after { box-shadow: none !important; }
     .print-mode .sidebar,
     .print-mode .page-header,
@@ -271,40 +272,9 @@
       width: auto !important;
     }
     .print-mode .main-content { margin-left: 0 !important; }
-    .print-mode .ts-scale-wrap {
-      width: 216mm !important; height: 303mm !important;
-      overflow: hidden !important; margin: 0 !important;
-      display: flex !important; align-items: center !important; justify-content: center !important;
-    }
-    .print-mode .ts-a4 {
-      width: 210mm !important; height: 297mm !important;
-      transform: none !important; box-shadow: none !important;
-      overflow: visible !important; position: relative !important;
-    }
+    .print-mode .ts-scale-wrap { width: 216mm !important; height: 303mm !important; overflow: hidden !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    .print-mode .ts-a4 { width: 210mm !important; height: 297mm !important; transform: none !important; box-shadow: none !important; }
     .print-mode .print-page-break { display: block !important; page-break-after: always !important; break-after: page !important; height: 0 !important; }
-
-    /* Bleed extensions - top/bottom bars extend 3mm into bleed area */
-    .print-mode .ts-topbar {
-      margin: -3mm -3mm 0 -3mm !important;
-      padding-top: calc(10px + 3mm) !important;
-      padding-left: calc(20px + 3mm) !important;
-      padding-right: calc(20px + 3mm) !important;
-    }
-    .print-mode .ts-foot {
-      margin: 0 -3mm -3mm -3mm !important;
-      padding-bottom: calc(8px + 3mm) !important;
-      padding-left: calc(20px + 3mm) !important;
-      padding-right: calc(20px + 3mm) !important;
-    }
-    /* Back page absolute header/footer bleed */
-    .print-mode .bp-header {
-      top: -3mm !important; left: -3mm !important; right: -3mm !important;
-      padding-top: 3mm !important;
-    }
-    .print-mode .bp-footer {
-      bottom: -3mm !important; left: -3mm !important; right: -3mm !important;
-      padding-bottom: 3mm !important;
-    }
 
     @media print {
       @page { size: 216mm 303mm; margin: 0; }
@@ -319,38 +289,15 @@
         width: auto !important;
       }
       .main-content { margin-left: 0 !important; }
-      .ts-scale-wrap {
-        width: 216mm !important; height: 303mm !important;
-        overflow: hidden !important; margin: 0 !important;
-        display: flex !important; align-items: center !important; justify-content: center !important;
-      }
-      .ts-a4 {
-        width: 210mm !important; height: 297mm !important;
-        transform: none !important; box-shadow: none !important;
-        overflow: visible !important; position: relative !important;
-      }
+      .ts-scale-wrap { width: 216mm !important; height: 303mm !important; overflow: hidden !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+      .ts-a4 { width: 210mm !important; height: 297mm !important; transform: none !important; box-shadow: none !important; overflow: visible !important; }
       .print-page-break { display: block !important; page-break-after: always !important; break-after: page !important; height: 0 !important; }
-      /* Bleed extensions */
-      .ts-topbar {
-        margin: -3mm -3mm 0 -3mm !important;
-        padding-top: calc(10px + 3mm) !important;
-        padding-left: calc(20px + 3mm) !important;
-        padding-right: calc(20px + 3mm) !important;
-      }
-      .ts-foot {
-        margin: 0 -3mm -3mm -3mm !important;
-        padding-bottom: calc(8px + 3mm) !important;
-        padding-left: calc(20px + 3mm) !important;
-        padding-right: calc(20px + 3mm) !important;
-      }
-      .bp-header {
-        top: -3mm !important; left: -3mm !important; right: -3mm !important;
-        padding-top: 3mm !important;
-      }
-      .bp-footer {
-        bottom: -3mm !important; left: -3mm !important; right: -3mm !important;
-        padding-bottom: 3mm !important;
-      }
+      /* Bleed: extend red bars 3mm into bleed area (flex pages) */
+      .ts-topbar { margin: -3mm -3mm 0 -3mm !important; padding-top: calc(10px + 3mm) !important; padding-left: calc(20px + 3mm) !important; padding-right: calc(20px + 3mm) !important; }
+      .ts-foot { margin: 0 -3mm -3mm -3mm !important; padding-bottom: calc(8px + 3mm) !important; padding-left: calc(20px + 3mm) !important; padding-right: calc(20px + 3mm) !important; }
+      /* Bleed: back page absolute header/footer */
+      .bp-header { top: -3mm !important; left: -3mm !important; right: -3mm !important; padding-top: 3mm !important; }
+      .bp-footer { bottom: -3mm !important; left: -3mm !important; right: -3mm !important; padding-bottom: 3mm !important; }
     }
   </style>
 </head>
@@ -1178,6 +1125,13 @@
       const [backPage, setBackPage] = useState({});
       const [zoom, setZoom] = useState(0.55);
       const [printing, setPrinting] = useState(false);
+      const [showTemplate, setShowTemplate] = useState(false);
+
+      // PDF template overlay for visual comparison
+      const templateBgs = {front:'images/template-front.png', inside_left:'images/template-inside-left.png', inside_right:'images/template-inside-right.png', back:'images/template-back.png'};
+      const TemplateOverlay = ({page}) => showTemplate && !printing ? (
+        <div style={{position:'absolute', top:0, left:0, width:'100%', height:'100%', backgroundImage:`url(${templateBgs[page]})`, backgroundSize:'100% 100%', opacity:0.35, pointerEvents:'none', zIndex:999}} />
+      ) : null;
       const [printOrder, setPrintOrder] = useState(null); // null | {orderNumber, date}
       const BASE_W = 794, BASE_H = 1123;
       const wrapW = Math.round(BASE_W * zoom);
@@ -1516,6 +1470,7 @@
                     <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(zoom*100)}%</span>
                     <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.min(1.5, Math.round((z + 0.1)*100)/100))}>+</button>
                     <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setZoom(0.55)}>Reset</button>
+                    <button className={`btn btn-sm ${showTemplate ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTemplate(t => !t)}>{showTemplate ? 'Template ON' : 'Template'}</button>
                   </div>
                 </div>
 
@@ -1524,7 +1479,8 @@
                   {/* ========== FRONT PAGE ========== */}
                   {(activePage === 'front' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
-                      <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
+                      <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative'}}>
+                        <TemplateOverlay page="front" />
                         {/* Red top bar */}
                         <div className="ts-topbar">
                           <span className="ts-topbar-logo">BNI</span>
@@ -1647,7 +1603,8 @@
                   {/* ========== INSIDE LEFT ========== */}
                   {(activePage === 'inside_left' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
-                      <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
+                      <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative'}}>
+                        <TemplateOverlay page="inside_left" />
                         <div className="ts-topbar" style={{minHeight:'auto', padding:'6px 14px'}}>
                           <span className="ts-topbar-logo" style={{fontSize:20, fontWeight:900}}>BNI</span>
                           <span className="ts-topbar-chapter" style={{fontSize:16, letterSpacing:2, fontWeight:700}}>{shortName}</span>
@@ -1702,7 +1659,8 @@
                   {/* ========== INSIDE RIGHT ========== */}
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
-                      <div className="ts-a4" style={{transform:`scale(${zoom})`}}>
+                      <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative'}}>
+                        <TemplateOverlay page="inside_right" />
                         <div className="ts-topbar" style={{minHeight:'auto', padding:'6px 14px'}}>
                           <span className="ts-topbar-logo" style={{fontSize:20, fontWeight:900}}>BNI</span>
                           <span className="ts-topbar-chapter" style={{fontSize:16, letterSpacing:2, fontWeight:700}}>{shortName}</span>
@@ -1738,6 +1696,7 @@
                   {(activePage === 'back' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, display:'block', position:'relative'}}>
+                        <TemplateOverlay page="back" />
                         {/* HEADER BAR - absolute from IDML: full width, ~80px tall */}
                         <div className="bp-header" style={{position:'absolute', top:0, left:0, right:0, height:80, background:'var(--bni-red)', display:'flex', alignItems:'center', padding:'0 14px', gap:6, zIndex:1}}>
                           <span className="ts-topbar-logo" style={{fontSize:22}}>BNI</span>
