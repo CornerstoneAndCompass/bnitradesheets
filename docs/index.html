@@ -2092,9 +2092,9 @@
       if (firstMrPage) {
         const mr = firstMrPage.blocks.find(b => b.type === 'member_referral');
         if (mr) {
-          const rowHmm = 297 / 70;
-          memberCapacity.tableHeightMm = mr.row.span * rowHmm;
-          // target: roughly 14 rows of body at 16mm each is ~224mm including header
+          // Resolve table height from frame (mm) or legacy row span; either is safe.
+          const f = tsmResolveFrame(mr);
+          memberCapacity.tableHeightMm = (f && f.h) ? f.h : 254;
           memberCapacity.rowsTargetPerPage = mr.fields && mr.fields.rowsTargetPerPage ? mr.fields.rowsTargetPerPage : 14;
           memberCapacity.rowsMinPerPage = mr.fields && mr.fields.rowsMinPerPage ? mr.fields.rowsMinPerPage : 12;
           memberCapacity.rowsMaxPerPage = mr.fields && mr.fields.rowsMaxPerPage ? mr.fields.rowsMaxPerPage : 18;
