@@ -285,21 +285,32 @@
       pointer-events: none; z-index: 999;
     }
 
-    /* Safe area = trim minus implied 0 inner margin (we use explicit per-block margins) */
-    .tsm-safe {
-      position: absolute; top: 3mm; left: 3mm;
-      width: 210mm; height: 297mm;
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      grid-template-rows: repeat(70, 1fr); /* ~4.24mm per row */
-      gap: 0;
-    }
-    /* Bleed layer - blocks placed outside the safe grid so they can extend past trim */
-    .tsm-bleed-layer { position:absolute; inset:0; pointer-events:none; }
-    .tsm-bleed-layer > * { pointer-events:auto; }
+    /* Safe area = trim. Now used as an absolute-positioning origin for blocks (frame coords in mm). */
+    .tsm-safe { position: absolute; inset: 0; }
+    /* Bleed layer - blocks that bleed live here, positioned with bleed-extending frame style */
+    .tsm-bleed-layer { position:absolute; inset:0; }
+
+    /* Snap-to-grid overlay (visible in editor only) */
+    .tsm-grid-overlay { position:absolute; inset:0; pointer-events:none; opacity:0.35; }
+
+    /* Selection chrome */
+    .tsm-block.tsm-selected { outline: 1.5px solid var(--bni-red); outline-offset: 0; z-index: 5; }
+    .tsm-handle { position:absolute; width:9px; height:9px; background:white; border:1.5px solid var(--bni-red); border-radius:50%; z-index:6; transform:translate(-50%,-50%); }
+    .tsm-handle.nw { left:0; top:0; cursor:nwse-resize; }
+    .tsm-handle.n { left:50%; top:0; cursor:ns-resize; }
+    .tsm-handle.ne { left:100%; top:0; cursor:nesw-resize; }
+    .tsm-handle.e { left:100%; top:50%; cursor:ew-resize; }
+    .tsm-handle.se { left:100%; top:100%; cursor:nwse-resize; }
+    .tsm-handle.s { left:50%; top:100%; cursor:ns-resize; }
+    .tsm-handle.sw { left:0; top:100%; cursor:nesw-resize; }
+    .tsm-handle.w { left:0; top:50%; cursor:ew-resize; }
+    .tsm-edit-mode .tsm-block { cursor: move; }
 
     /* === BLOCK BASE === */
-    .tsm-block { position:relative; overflow:hidden; }
+    /* Each grid item stretches to fill its row span and lays out children as a column.
+       Sub-blocks declare flex:1 on the part that should fill remaining space. */
+    .tsm-block { position:relative; overflow:hidden; min-width:0; min-height:0; display:flex; flex-direction:column; height:100%; }
+    .tsm-block > * { min-height:0; }
 
     /* Bleed-extending wrappers (used when a block is placed in .tsm-bleed-layer) */
     .tsm-block-bleed { position:absolute; }
@@ -344,14 +355,15 @@
       width:100%; height:100%; display:flex; align-items:center; justify-content:center;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight: 200;
-      font-size: 14.5mm;
-      letter-spacing: 0.4mm;
+      letter-spacing: 0.3mm;
       color: var(--bni-red);
       text-transform: uppercase;
       line-height: 1;
       padding: 0 6mm;
       white-space: nowrap;
+      overflow: hidden;
     }
+    .tsm-welcome__txt { display:inline-block; font-size: 14mm; transform-origin: center center; }
 
     /* === SECTION HEADER (red bar with white text) === Reusable for "BNI Meeting Agenda" etc */
     .tsm-section-h {
@@ -386,18 +398,18 @@
     .tsm-vr__qr-fallback { width:100%; height:100%; background: repeating-linear-gradient(45deg, #fff 0 1mm, #000 1mm 1.6mm); }
 
     /* === LEADERSHIP TEAM === 2-col table that auto-grows */
-    .tsm-lead { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; height: 100%; display: flex; flex-direction: column; }
-    .tsm-lead__rows { flex: 1; display: flex; flex-direction: column; }
-    .tsm-lead__row { display: grid; grid-template-columns: 49% 51%; align-items: center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; }
+    .tsm-lead { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .tsm-lead__rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .tsm-lead__row { flex: 1; display: grid; grid-template-columns: 49% 51%; align-items: center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; min-height: 0; }
     .tsm-lead__row:nth-child(odd) { background: #ffffff; }
     .tsm-lead__row:nth-child(even) { background: #FBE5E7; }
     .tsm-lead__role { font-weight: 700; color: #1a1a1a; }
     .tsm-lead__name { font-weight: 400; color: #1a1a1a; }
 
     /* === SPEAKER ROSTER === Date / name+category alternating rows */
-    .tsm-roster { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; height: 100%; display: flex; flex-direction: column; }
-    .tsm-roster__rows { flex: 1; display: flex; flex-direction: column; }
-    .tsm-roster__row { flex:1; display:grid; grid-template-columns: 26% 74%; align-items:center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; }
+    .tsm-roster { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .tsm-roster__rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .tsm-roster__row { flex:1; display:grid; grid-template-columns: 26% 74%; align-items:center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; min-height: 0; }
     .tsm-roster__row:nth-child(odd) { background: white; }
     .tsm-roster__row:nth-child(even) { background: #FBE5E7; }
     .tsm-roster__date { font-weight: 600; color:#1a1a1a; }
@@ -442,10 +454,10 @@
     .tsm-mref__special { font-style: italic; color:#9a9a9a; font-size: 2.8mm; text-align:center; padding: 1mm; align-self:center; justify-self:center; grid-column: 2 / span 1; }
 
     /* === UPCOMING DATES === */
-    .tsm-dates { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
+    .tsm-dates { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; min-height:0; }
     .tsm-dates__head { display:grid; grid-template-columns: 25% 75%; padding: 1.2mm 2mm; font-weight:700; font-size: 3.2mm; background: white; border-bottom: 0.4mm solid var(--bni-red); color: #222; }
-    .tsm-dates__rows { flex:1; display:flex; flex-direction:column; }
-    .tsm-dates__row { flex:1; display:grid; grid-template-columns: 25% 75%; align-items:center; padding: 0.8mm 2mm; font-size: 3.2mm; line-height: 1.2; }
+    .tsm-dates__rows { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .tsm-dates__row { flex:1; display:grid; grid-template-columns: 25% 75%; align-items:center; padding: 0.8mm 2mm; font-size: 3.2mm; line-height: 1.2; min-height:0; }
     .tsm-dates__row:nth-child(odd) { background: white; }
     .tsm-dates__row:nth-child(even) { background: #FBE5E7; }
     .tsm-dates__row.highlight { background: #FBE5E7; font-weight: 700; }
@@ -466,16 +478,16 @@
     .tsm-next__company { font-size: 3.4mm; color:#1a1a1a; }
 
     /* === TARGETING OCCUPATIONS === 2-col list */
-    .tsm-tgt { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
-    .tsm-tgt__rows { flex:1; display:flex; flex-direction:column; }
-    .tsm-tgt__row { flex:1; display:grid; grid-template-columns: 1fr 1fr; align-items:center; font-size: 3.0mm; }
+    .tsm-tgt { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; min-height:0; }
+    .tsm-tgt__rows { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .tsm-tgt__row { flex:1; display:grid; grid-template-columns: 1fr 1fr; align-items:center; font-size: 3.0mm; min-height:0; }
     .tsm-tgt__row:nth-child(odd) { background: white; }
     .tsm-tgt__row:nth-child(even) { background: #FBE5E7; }
     .tsm-tgt__cell { text-align:center; padding: 0.8mm 2mm; line-height:1.2; }
 
     /* === PODCASTS === Tile row */
-    .tsm-pod { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; gap: 1.5mm; padding: 1.5mm 0 0; }
-    .tsm-pod__row { flex:1; display:grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; }
+    .tsm-pod { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; gap: 1.5mm; padding: 1.5mm 0 0; min-height:0; }
+    .tsm-pod__row { flex:1; display:grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; min-height:0; }
     .tsm-pod__tile { display:flex; flex-direction:column; gap: 0.8mm; }
     .tsm-pod__img { background:#ddd no-repeat center/contain; aspect-ratio: 1 / 1; border-radius: 0.5mm; }
     .tsm-pod__name { font-weight: 700; font-size: 2.6mm; line-height: 1.15; }
@@ -484,20 +496,20 @@
     .tsm-pod__meta b { color: var(--bni-red); font-weight: 700; }
 
     /* === LINED WRITING AREA === Education Notes / I Have */
-    .tsm-lined { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
+    .tsm-lined { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; min-height:0; }
     .tsm-lined__head { padding: 0 0 1mm 0; }
     .tsm-lined__title { color: var(--bni-red); font-weight: 800; font-size: 5.2mm; line-height: 1.05; display:inline-block; }
     .tsm-lined__sub { font-style: italic; font-size: 3mm; color:#555; margin-left: 2mm; }
     .tsm-lined__body { flex:1; background: repeating-linear-gradient(to bottom, transparent 0 5.5mm, #c8c8c8 5.5mm 5.7mm); }
 
     /* === VP REPORT === */
-    .tsm-vp { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; border: 0.3mm solid #ccc; }
+    .tsm-vp { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; border: 0.3mm solid #ccc; min-height:0; }
     .tsm-vp__h { background: var(--bni-red); color: white; padding: 1.5mm 2mm; font-weight: 800; font-size: 4mm; }
     .tsm-vp__head { display:grid; grid-template-columns: 40% 20% 20% 20%; background: var(--bni-red); color: white; }
     .tsm-vp__head > div { padding: 1mm 2mm; font-size: 2.6mm; font-weight: 700; text-align: center; line-height: 1.2; }
     .tsm-vp__head > div:first-child { text-align: left; }
-    .tsm-vp__rows { flex:1; display:flex; flex-direction:column; }
-    .tsm-vp__row { flex:1; display:grid; grid-template-columns: 40% 20% 20% 20%; border-bottom: 0.2mm solid #ddd; }
+    .tsm-vp__rows { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .tsm-vp__row { flex:1; display:grid; grid-template-columns: 40% 20% 20% 20%; border-bottom: 0.2mm solid #ddd; min-height:0; }
     .tsm-vp__row:last-child { border-bottom: 0; }
     .tsm-vp__row > div { padding: 0.8mm 2mm; font-size: 2.7mm; display:flex; align-items:center; }
     .tsm-vp__row > div:not(:first-child) { justify-content:center; border-left: 0.2mm solid #ddd; }
@@ -1438,43 +1450,41 @@
       } catch(e) { return dateStr; }
     }
 
-    // Convert grid coords to inline style. Bleed extends 3mm past trim.
-    function tsmBlockStyle(block) {
-      const s = {};
-      if (block.col) {
-        s.gridColumnStart = block.col.start;
-        s.gridColumnEnd = `span ${block.col.span}`;
-      }
-      if (block.row) {
-        s.gridRowStart = block.row.start;
-        s.gridRowEnd = `span ${block.row.span}`;
-      }
-      return s;
-    }
-
-    // Compute bleed wrapper style for blocks that bleed (live in bleed-layer, not safe-grid)
-    // Block.row/col are in safe-grid units; we translate to mm + add 3mm where bleed applies.
-    function tsmBleedStyle(block) {
-      // Safe area: 210mm x 297mm, 12 cols x 70 rows
+    // Resolve a block to its frame in mm relative to the trim safe area's top-left.
+    // If block.frame is provided (x,y,w,h in mm), use that directly. Otherwise compute
+    // from the legacy 12-col x 70-row grid coords.
+    function tsmResolveFrame(block) {
+      if (block.frame) return { x: block.frame.x || 0, y: block.frame.y || 0, w: block.frame.w || 0, h: block.frame.h || 0 };
       const colWmm = 210 / 12;
       const rowHmm = 297 / 70;
-      const left = (block.col.start - 1) * colWmm;
-      const top = (block.row.start - 1) * rowHmm;
-      const width = block.col.span * colWmm;
-      const height = block.row.span * rowHmm;
+      const x = ((block.col && block.col.start) ? (block.col.start - 1) : 0) * colWmm;
+      const y = ((block.row && block.row.start) ? (block.row.start - 1) : 0) * rowHmm;
+      const w = ((block.col && block.col.span) ? block.col.span : 12) * colWmm;
+      const h = ((block.row && block.row.span) ? block.row.span : 1) * rowHmm;
+      return { x, y, w, h };
+    }
+
+    // Compute the absolute style for a block on the page (page is 216 x 303 mm with 3mm
+    // bleed inset to the trim safe area at 3mm,3mm). Bleed extends 3mm past trim.
+    function tsmFrameStyle(block) {
+      const f = tsmResolveFrame(block);
       const b = block.bleed || '';
-      const expandLeft = (b === 'left' || b === 'all' || b === 'horizontal') ? 3 : 0;
-      const expandRight = (b === 'right' || b === 'all' || b === 'horizontal') ? 3 : 0;
-      const expandTop = (b === 'top' || b === 'all' || b === 'vertical') ? 3 : 0;
-      const expandBottom = (b === 'bottom' || b === 'all' || b === 'vertical') ? 3 : 0;
+      const expandL = (b === 'left' || b === 'all' || b === 'horizontal') ? 3 : 0;
+      const expandR = (b === 'right' || b === 'all' || b === 'horizontal') ? 3 : 0;
+      const expandT = (b === 'top' || b === 'all' || b === 'vertical') ? 3 : 0;
+      const expandB = (b === 'bottom' || b === 'all' || b === 'vertical') ? 3 : 0;
       return {
         position: 'absolute',
-        left: `${3 + left - expandLeft}mm`,
-        top: `${3 + top - expandTop}mm`,
-        width: `${width + expandLeft + expandRight}mm`,
-        height: `${height + expandTop + expandBottom}mm`,
+        left: `${3 + f.x - expandL}mm`,
+        top: `${3 + f.y - expandT}mm`,
+        width: `${f.w + expandL + expandR}mm`,
+        height: `${f.h + expandT + expandB}mm`,
       };
     }
+
+    // Legacy alias - both safe and bleed blocks now use tsmFrameStyle.
+    const tsmBlockStyle = tsmFrameStyle;
+    const tsmBleedStyle = tsmFrameStyle;
 
     // ---------- block components ----------
     // Each block receives { fields, content, ctx } where:
@@ -1482,17 +1492,32 @@
     //   content: chapter trade-sheet content (frontCover, backPage, members, etc.)
     //   ctx: { chapter, sheet, members, pageIndex, totalPages, designations, ... }
 
+    // Strip "BNI" prefix and reduce to a header-friendly short form.
+    // "BNI Royals Kingston" -> "ROYALS"
+    // "BNI Manly Sydney" -> "MANLY"
+    // The full chapter name is used in the welcome title only if it fits.
+    function tsmShortChapterName(name) {
+      if (!name) return '';
+      const stripped = name.replace(/^BNI\s+/i, '').trim();
+      const firstWord = stripped.split(/\s+/)[0] || stripped;
+      return firstWord.toUpperCase();
+    }
+
     function BlkHeaderBar({ fields, content, ctx }) {
-      const chapterName = (content.frontCover.headline || ctx.chapter.name || '').replace(/^BNI\s*/i, '').toUpperCase();
-      const subtitle = fields.subtitle || '';
+      const fullName = content.frontCover.headline || ctx.chapter.name || '';
+      const shortName = tsmShortChapterName(fullName);
+      const subtitle = (fields.subtitle || '').toUpperCase();
       const showDatePanel = fields.showDatePanel !== false;
       const dateObj = tsmFormatLongDate(content.frontCover.date || ctx.sheet.week_date);
+      // Fallback addresses: prefer explicit content, then placeholder, then chapter data
+      const venue = content.frontCover.venue || (ctx.placeholders && ctx.placeholders.venue) || ctx.chapter.meeting_location || '';
+      const venueAddr = content.frontCover.venue_address || (ctx.placeholders && ctx.placeholders.venue_address) || '';
 
       return (
         <div className="tsm-header">
           <div className="tsm-header__brand">
             <span className="tsm-header__logo">BNI</span>
-            <span className="tsm-header__chapter">{chapterName}</span>
+            <span className="tsm-header__chapter">{shortName}</span>
             {subtitle && <span className="tsm-header__sub">{subtitle}</span>}
           </div>
           {showDatePanel && (
@@ -1506,8 +1531,8 @@
                 </div>
               ) : null}
               <div className="tsm-header__rule" />
-              <div className="tsm-header__venue">{content.frontCover.venue || ctx.chapter.meeting_location || ''}</div>
-              <div className="tsm-header__address">{content.frontCover.venue_address || ctx.chapter.meeting_address || ''}</div>
+              <div className="tsm-header__venue">{venue}</div>
+              <div className="tsm-header__address">{venueAddr}</div>
             </div>
           )}
         </div>
@@ -1515,9 +1540,25 @@
     }
 
     function BlkWelcomeTitle({ fields, content, ctx }) {
-      const chapterName = (content.frontCover.headline || ctx.chapter.name || '').replace(/^BNI\s*/i, '').toUpperCase();
-      const text = (fields.text || `Welcome to BNI ${chapterName}`).toUpperCase();
-      return <div className="tsm-welcome">{text}</div>;
+      const fullName = content.frontCover.headline || ctx.chapter.name || '';
+      const shortName = tsmShortChapterName(fullName);
+      const text = (fields.text || `Welcome to BNI ${shortName}`).toUpperCase();
+      // Auto-fit to width: measure the rendered text and scale down if it overflows
+      const wrapRef = React.useRef(null);
+      const txtRef = React.useRef(null);
+      const [scale, setScale] = React.useState(1);
+      React.useEffect(() => {
+        if (!wrapRef.current || !txtRef.current) return;
+        const wrapW = wrapRef.current.clientWidth;
+        const txtW = txtRef.current.scrollWidth;
+        if (txtW > 0 && txtW > wrapW) setScale(wrapW / txtW);
+        else setScale(1);
+      }, [text]);
+      return (
+        <div className="tsm-welcome" ref={wrapRef}>
+          <span className="tsm-welcome__txt" ref={txtRef} style={{ transform: `scale(${scale})` }}>{text}</span>
+        </div>
+      );
     }
 
     function BlkMeetingAgenda({ fields, content, ctx }) {
@@ -1556,9 +1597,10 @@
     }
 
     function BlkLeadershipTeam({ fields, content, ctx }) {
+      const ph = ctx.placeholders || {};
       const rows = (fields.rows || []).map(r => {
         const v = content.frontCover[r.key];
-        return { role: r.role, name: (v && v.trim()) ? v : (content.frontCover[r.key + '__placeholder'] || r.placeholder || '') };
+        return { role: r.role, name: (v && v.trim()) ? v : (ph[r.key] || r.placeholder || '') };
       });
       return (
         <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
@@ -1579,13 +1621,14 @@
 
     function BlkSpeakerRoster({ fields, content, ctx }) {
       const slots = fields.slots || 6;
+      const ph = ctx.placeholders || {};
       const rows = [];
       for (let i = 1; i <= slots; i++) {
         const m = (content.frontCover['sp_member_' + i] && ctx.members.find(x => x.id === parseInt(content.frontCover['sp_member_' + i]))) || null;
-        const rawDate = content.frontCover['sp_date_' + i] || '';
+        const rawDate = content.frontCover['sp_date_' + i] || ph['sp_date_' + i] || '';
         const dt = rawDate.match(/^\d{4}-\d{2}-\d{2}$/) ? tsmFormatShortDate(rawDate) : rawDate;
-        const nm = m ? m.name : (content.frontCover['sp_name_' + i] || '');
-        const ct = m ? m.business_category : (content.frontCover['sp_cat_' + i] || '');
+        const nm = m ? m.name : (content.frontCover['sp_name_' + i] || ph['sp_name_' + i] || '');
+        const ct = m ? m.business_category : (content.frontCover['sp_cat_' + i] || ph['sp_cat_' + i] || '');
         rows.push({ dt, nm, ct });
       }
       return (
@@ -1614,12 +1657,13 @@
     }
 
     function BlkPhotoCaption({ fields, content, ctx }) {
-      const url = content.frontCover.photo_url || fields.url || '';
-      const cap1 = content.frontCover.photo_caption_1 || fields.caption1 || '';
-      const cap2 = content.frontCover.photo_caption_2 || fields.caption2 || '';
+      const ph = ctx.placeholders || {};
+      const url = content.frontCover.photo_url || fields.url || ph.photo_url || 'images/chapter-photo.jpg';
+      const cap1 = content.frontCover.photo_caption_1 || fields.caption1 || ph.photo_caption_1 || '';
+      const cap2 = content.frontCover.photo_caption_2 || fields.caption2 || ph.photo_caption_2 || '';
       return (
-        <div className="tsm-photo">
-          <div className="tsm-photo__img" style={{ backgroundImage: url ? `url(${url})` : 'none', background: url ? `url(${url}) no-repeat center/cover` : '#eee' }} />
+        <div className="tsm-photo" style={{flex:1, minHeight:0}}>
+          <div className="tsm-photo__img" style={{ background: url ? `url(${url}) no-repeat center/cover` : '#eee' }} />
           {(cap1 || cap2) && (
             <div className="tsm-photo__cap">
               {cap1 && <div>{cap1}</div>}
@@ -1693,11 +1737,12 @@
 
     function BlkUpcomingDates({ fields, content, ctx }) {
       const slots = fields.slots || 6;
+      const ph = ctx.placeholdersBack || {};
       const rows = [];
       for (let i = 1; i <= slots; i++) {
         rows.push({
-          dt: content.backPage['date_' + i] || '',
-          ev: content.backPage['event_' + i] || '',
+          dt: content.backPage['date_' + i] || ph['date_' + i] || '',
+          ev: content.backPage['event_' + i] || ph['event_' + i] || '',
           highlight: content.backPage['date_highlight'] === String(i),
         });
       }
@@ -1723,27 +1768,29 @@
     }
 
     function BlkFeaturePresenter({ fields, content, ctx }) {
+      const ph = ctx.placeholdersBack || {};
+      const presenter = content.backPage.feature_presenter || ph.feature_presenter || '';
+      const company = content.backPage.feature_company || ph.feature_company || '';
       return (
-        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
-          <div className="tsm-feat" style={{flex:1}}>
-            <div className="tsm-feat__title">Feature Presentation</div>
-            <div className="tsm-feat__sub">Learn more about</div>
-            <div>
-              <span className="tsm-feat__person">{content.backPage.feature_presenter || ''}</span>
-              {content.backPage.feature_company && <span className="tsm-feat__company"> {content.backPage.feature_company}</span>}
-            </div>
-            {fields.micUrl && <div className="tsm-feat__mic" style={{ background:`url(${fields.micUrl}) no-repeat center/contain` }} />}
+        <div className="tsm-feat" style={{flex:1}}>
+          <div className="tsm-feat__title">Feature Presentation</div>
+          <div className="tsm-feat__sub">Learn more about</div>
+          <div>
+            <span className="tsm-feat__person">{presenter}</span>
+            {company && <span className="tsm-feat__company"> {company}</span>}
           </div>
+          {fields.micUrl && <div className="tsm-feat__mic" style={{ background:`url(${fields.micUrl}) no-repeat center/contain` }} />}
         </div>
       );
     }
 
     function BlkNextPresenter({ fields, content, ctx }) {
+      const ph = ctx.placeholdersBack || {};
       return (
         <div className="tsm-next">
           <div className="tsm-next__label">Next weeks presentation:</div>
-          <div className="tsm-next__person">{content.backPage.next_presenter || ''}</div>
-          {content.backPage.next_company && <div className="tsm-next__company">{content.backPage.next_company}</div>}
+          <div className="tsm-next__person">{content.backPage.next_presenter || ph.next_presenter || ''}</div>
+          {(content.backPage.next_company || ph.next_company) && <div className="tsm-next__company">{content.backPage.next_company || ph.next_company}</div>}
         </div>
       );
     }
@@ -1938,31 +1985,93 @@
     }
 
     // ---------- renderer ----------
-    function ModularPage({ page, content, ctx, showTrim }) {
-      const safeBlocks = (page.blocks || []).filter(b => !b.bleed);
-      const bleedBlocks = (page.blocks || []).filter(b => b.bleed);
+    function ModularPage({ page, content, ctx, showTrim, showGrid, gridSize, selectedId, onSelect, onFrameChange, editMode }) {
+      const blocks = page.blocks || [];
+      const pageRef = React.useRef(null);
+      // Drag/resize state
+      const [drag, setDrag] = React.useState(null); // {blockId, mode:'move'|'resize-nw'|..., startMouse, startFrame}
+      const handleBlockMouseDown = (e, b) => {
+        if (!editMode || !onSelect) return;
+        e.stopPropagation();
+        onSelect(b.id);
+        // Start move drag
+        const f = tsmResolveFrame(b);
+        setDrag({ blockId: b.id, mode: 'move', startMouse: {x:e.clientX, y:e.clientY}, startFrame: f, bleed: b.bleed });
+      };
+      const handleHandleMouseDown = (e, b, mode) => {
+        if (!editMode) return;
+        e.stopPropagation();
+        const f = tsmResolveFrame(b);
+        setDrag({ blockId: b.id, mode, startMouse: {x:e.clientX, y:e.clientY}, startFrame: f, bleed: b.bleed });
+      };
+      React.useEffect(() => {
+        if (!drag || !onFrameChange) return;
+        // Convert pixel delta to mm using the page's measured size + zoom (pageRef is at 216mm wide unscaled, page wrapper applies scale)
+        const onMove = (ev) => {
+          const wrap = pageRef.current && pageRef.current.parentElement;
+          if (!wrap) return;
+          // The wrapper is at zoom*216mm wide. We need pixels per mm.
+          const pxPerMm = (pageRef.current.getBoundingClientRect().width) / 216;
+          const dxMm = (ev.clientX - drag.startMouse.x) / pxPerMm;
+          const dyMm = (ev.clientY - drag.startMouse.y) / pxPerMm;
+          let { x, y, w, h } = drag.startFrame;
+          const snap = (v) => gridSize ? Math.round(v / gridSize) * gridSize : v;
+          if (drag.mode === 'move') { x = snap(x + dxMm); y = snap(y + dyMm); }
+          else if (drag.mode === 'resize-nw') { x = snap(x + dxMm); y = snap(y + dyMm); w = snap(drag.startFrame.w - dxMm); h = snap(drag.startFrame.h - dyMm); }
+          else if (drag.mode === 'resize-n')  { y = snap(y + dyMm); h = snap(drag.startFrame.h - dyMm); }
+          else if (drag.mode === 'resize-ne') { y = snap(y + dyMm); w = snap(drag.startFrame.w + dxMm); h = snap(drag.startFrame.h - dyMm); }
+          else if (drag.mode === 'resize-e')  { w = snap(drag.startFrame.w + dxMm); }
+          else if (drag.mode === 'resize-se') { w = snap(drag.startFrame.w + dxMm); h = snap(drag.startFrame.h + dyMm); }
+          else if (drag.mode === 'resize-s')  { h = snap(drag.startFrame.h + dyMm); }
+          else if (drag.mode === 'resize-sw') { x = snap(x + dxMm); w = snap(drag.startFrame.w - dxMm); h = snap(drag.startFrame.h + dyMm); }
+          else if (drag.mode === 'resize-w')  { x = snap(x + dxMm); w = snap(drag.startFrame.w - dxMm); }
+          // clamp size
+          if (w < 5) w = 5;
+          if (h < 5) h = 5;
+          onFrameChange(drag.blockId, { x: Math.round(x*10)/10, y: Math.round(y*10)/10, w: Math.round(w*10)/10, h: Math.round(h*10)/10 });
+        };
+        const onUp = () => setDrag(null);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+      }, [drag, onFrameChange, gridSize]);
+
       return (
-        <div className="tsm-page">
-          {/* Bleed-extending blocks live in their own absolutely-positioned layer */}
+        <div className={`tsm-page${editMode ? ' tsm-edit-mode' : ''}`} ref={pageRef} onMouseDown={() => editMode && onSelect && onSelect(null)}>
+          {/* Bleed layer first (behind), safe layer last (front) - but absolute frames decide z naturally */}
           <div className="tsm-bleed-layer">
-            {bleedBlocks.map((b, i) => {
+            {blocks.filter(b => b.bleed).map((b, i) => {
               const Comp = TSM_BLOCKS[b.type] && TSM_BLOCKS[b.type].component;
               if (!Comp) return null;
+              const isSel = selectedId === b.id;
               return (
-                <div key={b.id || i} className="tsm-block tsm-block-editor-outline" style={tsmBleedStyle(b)}>
+                <div key={b.id || i} className={`tsm-block tsm-block-editor-outline${isSel ? ' tsm-selected' : ''}`} style={tsmFrameStyle(b)} onMouseDown={(e) => handleBlockMouseDown(e, b)}>
                   <Comp fields={b.fields || {}} content={content} ctx={{ ...ctx, block: b }} />
+                  {isSel && editMode && ['nw','n','ne','e','se','s','sw','w'].map(p => (
+                    <div key={p} className={`tsm-handle ${p}`} onMouseDown={(e) => handleHandleMouseDown(e, b, 'resize-'+p)} />
+                  ))}
                 </div>
               );
             })}
           </div>
-          {/* Safe-area grid */}
           <div className="tsm-safe">
-            {safeBlocks.map((b, i) => {
+            {/* Snap grid overlay - shown only in edit mode and when toggled */}
+            {editMode && showGrid && gridSize ? (
+              <div className="tsm-grid-overlay" style={{
+                backgroundImage: `linear-gradient(to right, rgba(0,0,255,0.18) 0.2mm, transparent 0.2mm), linear-gradient(to bottom, rgba(0,0,255,0.18) 0.2mm, transparent 0.2mm)`,
+                backgroundSize: `${gridSize}mm ${gridSize}mm`,
+              }} />
+            ) : null}
+            {blocks.filter(b => !b.bleed).map((b, i) => {
               const Comp = TSM_BLOCKS[b.type] && TSM_BLOCKS[b.type].component;
               if (!Comp) return null;
+              const isSel = selectedId === b.id;
               return (
-                <div key={b.id || i} className="tsm-block tsm-block-editor-outline" style={tsmBlockStyle(b)}>
+                <div key={b.id || i} className={`tsm-block tsm-block-editor-outline${isSel ? ' tsm-selected' : ''}`} style={tsmFrameStyle(b)} onMouseDown={(e) => handleBlockMouseDown(e, b)}>
                   <Comp fields={b.fields || {}} content={content} ctx={{ ...ctx, block: b }} />
+                  {isSel && editMode && ['nw','n','ne','e','se','s','sw','w'].map(p => (
+                    <div key={p} className={`tsm-handle ${p}`} onMouseDown={(e) => handleHandleMouseDown(e, b, 'resize-'+p)} />
+                  ))}
                 </div>
               );
             })}
@@ -1972,7 +2081,7 @@
       );
     }
 
-    function ModularRenderer({ template, content, sheet, chapter, members, zoom = 1, showTrim = false, editing = false }) {
+    function ModularRenderer({ template, content, sheet, chapter, members, placeholders, placeholdersBack, zoom = 1, showTrim = false, editing = false, editMode = false, showGrid = false, gridSize = 5, selectedBlockId, onSelectBlock, onFrameChange }) {
       // Walk template.pages, expanding any 'member_referral' block into possibly multiple pages
       const pages = [];
       const reservedMemberPages = (template.pages || []).filter(p => (p.blocks || []).some(b => b.type === 'member_referral')).length;
@@ -2025,7 +2134,7 @@
         }
       });
 
-      const baseCtx = { sheet, chapter, members, totalPages: pages.length };
+      const baseCtx = { sheet, chapter, members, placeholders: placeholders || {}, placeholdersBack: placeholdersBack || {}, totalPages: pages.length };
 
       return (
         <div className="tsm-canvas">
@@ -2033,7 +2142,18 @@
             {pages.map((p, i) => (
               <div key={i} className="tsm-scale-wrap" style={{ width: `${216 * zoom}mm`, height: `${303 * zoom}mm` }}>
                 <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: '216mm', height: '303mm' }}>
-                  <ModularPage page={p.pageDef} content={content} ctx={{ ...baseCtx, ...p.ctx, pageIndex: i }} showTrim={showTrim} />
+                  <ModularPage
+                    page={p.pageDef}
+                    content={content}
+                    ctx={{ ...baseCtx, ...p.ctx, pageIndex: i }}
+                    showTrim={showTrim}
+                    showGrid={showGrid}
+                    gridSize={gridSize}
+                    editMode={editMode}
+                    selectedId={selectedBlockId}
+                    onSelect={onSelectBlock}
+                    onFrameChange={(blockId, frame) => onFrameChange && onFrameChange(p.pageDef.id, blockId, frame)}
+                  />
                 </div>
               </div>
             ))}
@@ -2122,6 +2242,9 @@
     ];
 
     // The default template is the BNI Royals 4-page design.
+    // Coordinates are in millimetres relative to the trim safe area's top-left (210x297mm).
+    // Blocks with bleed:'all'/'top'/'bottom'/'left'/'right' extend 3mm past trim on those edges.
+    // These positions are derived from the original IDML measurements (1mm = 12.69 px).
     function makeDefaultTemplate() {
       return {
         id: 'default',
@@ -2132,64 +2255,50 @@
           {
             id: 'page-front',
             blocks: [
-              // Header bar - bleeds top, left, right
-              { id: 'h1', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'', showDatePanel:true } },
-              // Welcome title strip
-              { id: 'w1', type: 'welcome_title', col:{start:1,span:12}, row:{start:8,span:5}, fields:{ text:'' } },
-              // Meeting Agenda - left col
-              { id: 'a1', type: 'meeting_agenda', col:{start:1,span:4}, row:{start:13,span:32}, fields:{ title:'BNI Meeting Agenda', defaultItems: TSM_DEFAULT_AGENDA } },
-              // Philosophy - centre
-              { id: 'p1', type: 'philosophy', col:{start:5,span:5}, row:{start:13,span:18}, fields:{ title:"BNI's Philosophy", defaultText: TSM_DEFAULT_PHILOSOPHY } },
-              // Visitor Resources - right col
-              { id: 'v1', type: 'visitor_resources', col:{start:10,span:3}, row:{start:13,span:18}, fields:{ title:'Visitor Resources', msg:'Thanks for visiting our chapter today, here are some helpful resources.' } },
-              // Leadership Team - right two-thirds
-              { id: 'l1', type: 'leadership_team', col:{start:5,span:8}, row:{start:31,span:31}, fields:{ title:'Leadership Team', rows: TSM_DEFAULT_LEADERSHIP_ROWS } },
-              // Speaker Roster - bottom-left
-              { id: 's1', type: 'speaker_roster', col:{start:1,span:4}, row:{start:45,span:14}, fields:{ title:'Speaker Roster', subtitle:'Spotlight Star Presenter', slots:6, note:'Speakers Please Bring a door prize. Members Please enter your weekly STATS into BNI Connect' } },
-              // Photo + caption - bottom-left under roster
-              { id: 'ph1', type: 'photo_caption', col:{start:1,span:4}, row:{start:59,span:9}, fields:{} },
-              // Footer bar - bleeds bottom
-              { id: 'f1', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'BNI Royals' } },
+              { id: 'h1', type: 'header_bar', frame:{x:0,y:0,w:210,h:28}, bleed:'all', fields:{ subtitle:'', showDatePanel:true } },
+              { id: 'w1', type: 'welcome_title', frame:{x:6,y:30,w:198,h:18}, fields:{ text:'' } },
+              { id: 'a1', type: 'meeting_agenda', frame:{x:6,y:50,w:64,h:130}, fields:{ title:'BNI Meeting Agenda', defaultItems: TSM_DEFAULT_AGENDA } },
+              { id: 'p1', type: 'philosophy', frame:{x:73,y:50,w:78,h:75}, fields:{ title:"BNI's Philosophy", defaultText: TSM_DEFAULT_PHILOSOPHY } },
+              { id: 'v1', type: 'visitor_resources', frame:{x:154,y:50,w:50,h:60}, fields:{ title:'Visitor Resources', msg:'Thanks for visiting our chapter today, here are some helpful resources.' } },
+              { id: 'l1', type: 'leadership_team', frame:{x:73,y:130,w:131,h:140}, fields:{ title:'Leadership Team', rows: TSM_DEFAULT_LEADERSHIP_ROWS } },
+              { id: 's1', type: 'speaker_roster', frame:{x:6,y:184,w:64,h:60}, fields:{ title:'Speaker Roster', subtitle:'Spotlight Star Presenter', slots:6, note:'Speakers Please Bring a door prize. Members Please enter your weekly STATS into BNI Connect' } },
+              { id: 'ph1', type: 'photo_caption', frame:{x:6,y:248,w:64,h:38}, fields:{} },
+              { id: 'f1', type: 'footer_bar', frame:{x:0,y:288,w:210,h:9}, bleed:'all', fields:{ text:'BNI Royals' } },
             ],
           },
           // ============== PAGE 2: INSIDE LEFT (members 1-N) ==============
           {
             id: 'page-inside-left',
             blocks: [
-              { id: 'h2', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
-              { id: 'mr1', type: 'member_referral', col:{start:1,span:12}, row:{start:9,span:59}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
-              { id: 'f2', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'Writing it down makes you 42% more likely to bring a referral' } },
+              { id: 'h2', type: 'header_bar', frame:{x:0,y:0,w:210,h:28}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
+              { id: 'mr1', type: 'member_referral', frame:{x:6,y:32,w:198,h:254}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
+              { id: 'f2', type: 'footer_bar', frame:{x:0,y:288,w:210,h:9}, bleed:'all', fields:{ text:'Writing it down makes you 42% more likely to bring a referral' } },
             ],
           },
-          // ============== PAGE 3: INSIDE RIGHT (members N+1-...) ==============
+          // ============== PAGE 3: INSIDE RIGHT (members N+1...) ==============
           {
             id: 'page-inside-right',
             blocks: [
-              { id: 'h3', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
-              { id: 'mr2', type: 'member_referral', col:{start:1,span:12}, row:{start:9,span:59}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
-              { id: 'f3', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'1 Referral. 1 one-to-one. 1 CEU. 1 Meeting. 1 Visitor. = Power of one' } },
+              { id: 'h3', type: 'header_bar', frame:{x:0,y:0,w:210,h:28}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
+              { id: 'mr2', type: 'member_referral', frame:{x:6,y:32,w:198,h:254}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
+              { id: 'f3', type: 'footer_bar', frame:{x:0,y:288,w:210,h:9}, bleed:'all', fields:{ text:'1 Referral. 1 one-to-one. 1 CEU. 1 Meeting. 1 Visitor. = Power of one' } },
             ],
           },
           // ============== PAGE 4: BACK ==============
           {
             id: 'page-back',
             blocks: [
-              { id: 'h4', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'', showDatePanel:false } },
-              // Podcasts | Education Notes
-              { id: 'pod1', type: 'podcasts', col:{start:1,span:7}, row:{start:9,span:14}, fields:{ title:'BNI Podcasts', tiles: TSM_DEFAULT_PODCASTS } },
-              { id: 'edu1', type: 'lined', col:{start:8,span:5}, row:{start:9,span:8}, fields:{ title:'Education Notes', subtitle:'When you learn more, you earn more' } },
-              { id: 'feat1', type: 'feature_presenter', col:{start:8,span:5}, row:{start:17,span:6}, fields:{ micUrl: 'images/mic.png' } },
-              // Upcoming Dates | Next Presenter
-              { id: 'up1', type: 'upcoming_dates', col:{start:1,span:7}, row:{start:23,span:11}, fields:{ title:'Upcoming Dates', slots:6 } },
-              { id: 'nxt1', type: 'next_presenter', col:{start:8,span:5}, row:{start:23,span:6}, fields:{} },
-              { id: 'ihave1', type: 'lined', col:{start:8,span:5}, row:{start:29,span:13}, fields:{ title:'I Have', subtitle:'Refer to your BNI Connect App' } },
-              // Targeting Occupations | (continued)
-              { id: 'tgt1', type: 'targeting_occupations', col:{start:1,span:7}, row:{start:34,span:13}, fields:{ title:'Targeting Occupations', defaults: TSM_DEFAULT_TARGETING, slots:7 } },
-              // Scan QR | VP Report
-              { id: 'scan1', type: 'scan_qr', col:{start:1,span:3}, row:{start:47,span:14}, fields:{ title:'Scan here for our Facebook page' } },
-              { id: 'vp1', type: 'vp_report', col:{start:4,span:9}, row:{start:42,span:19}, fields:{ kpis: TSM_DEFAULT_VP_KPIS } },
-              // Footer
-              { id: 'f4', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:"Whether you're giving or receiving, log it to close the loop" } },
+              { id: 'h4', type: 'header_bar', frame:{x:0,y:0,w:210,h:28}, bleed:'all', fields:{ subtitle:'', showDatePanel:false } },
+              { id: 'pod1', type: 'podcasts', frame:{x:6,y:32,w:115,h:54}, fields:{ title:'BNI Podcasts', tiles: TSM_DEFAULT_PODCASTS } },
+              { id: 'edu1', type: 'lined', frame:{x:125,y:32,w:79,h:30}, fields:{ title:'Education Notes', subtitle:'When you learn more, you earn more' } },
+              { id: 'feat1', type: 'feature_presenter', frame:{x:125,y:64,w:79,h:24}, fields:{ micUrl: 'images/mic.png' } },
+              { id: 'up1', type: 'upcoming_dates', frame:{x:6,y:90,w:115,h:46}, fields:{ title:'Upcoming Dates', slots:6 } },
+              { id: 'nxt1', type: 'next_presenter', frame:{x:125,y:90,w:79,h:24}, fields:{} },
+              { id: 'ihave1', type: 'lined', frame:{x:125,y:116,w:79,h:60}, fields:{ title:'I Have', subtitle:'Refer to your BNI Connect App' } },
+              { id: 'tgt1', type: 'targeting_occupations', frame:{x:6,y:138,w:115,h:60}, fields:{ title:'Targeting Occupations', defaults: TSM_DEFAULT_TARGETING, slots:7 } },
+              { id: 'scan1', type: 'scan_qr', frame:{x:6,y:200,w:55,h:84}, fields:{ title:'Scan here for our Facebook page' } },
+              { id: 'vp1', type: 'vp_report', frame:{x:64,y:200,w:140,h:84}, fields:{ kpis: TSM_DEFAULT_VP_KPIS } },
+              { id: 'f4', type: 'footer_bar', frame:{x:0,y:288,w:210,h:9}, bleed:'all', fields:{ text:"Whether you're giving or receiving, log it to close the loop" } },
             ],
           },
         ],
@@ -2220,6 +2329,39 @@
       });
       const [modularZoom, setModularZoom] = useState(0.55); // ~55% scale fits one page nicely on desktop
       const [showTrim, setShowTrim] = useState(false);
+      // Editor state
+      const [editMode, setEditMode] = useState(false);
+      const [showGrid, setShowGrid] = useState(true);
+      const [gridSize, setGridSize] = useState(2); // mm snap step
+      const [selectedBlockId, setSelectedBlockId] = useState(null);
+      // Live in-memory template (clone of default; future: load per-chapter saved template)
+      const [template, setTemplate] = useState(() => makeDefaultTemplate());
+      const updateBlockFrame = useCallback((pageId, blockId, frame) => {
+        setTemplate(t => ({
+          ...t,
+          pages: t.pages.map(p => p.id !== pageId ? p : ({
+            ...p,
+            blocks: p.blocks.map(b => b.id !== blockId ? b : ({ ...b, frame: { ...(b.frame||{}), ...frame } }))
+          }))
+        }));
+      }, []);
+      const updateBlockField = useCallback((pageId, blockId, key, value) => {
+        setTemplate(t => ({
+          ...t,
+          pages: t.pages.map(p => p.id !== pageId ? p : ({
+            ...p,
+            blocks: p.blocks.map(b => b.id !== blockId ? b : ({ ...b, fields: { ...(b.fields||{}), [key]: value } }))
+          }))
+        }));
+      }, []);
+      // Find selected block (search across all pages)
+      const findSelected = () => {
+        for (const p of template.pages) {
+          const b = (p.blocks || []).find(bb => bb.id === selectedBlockId);
+          if (b) return { page: p, block: b };
+        }
+        return null;
+      };
 
       // PDF template as actual page background
       const templateBgs = {front:'images/template-front.png', inside_left:'images/template-inside-left.png', inside_right:'images/template-inside-right.png', back:'images/template-back.png'};
@@ -2573,6 +2715,17 @@
                         <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setModularZoom(z => Math.min(1.5, Math.round((z + 0.05)*100)/100))}>+</button>
                         <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setModularZoom(0.55)}>Reset</button>
                         <button className={`btn btn-sm ${showTrim ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTrim(t => !t)}>{showTrim ? 'Trim ON' : 'Trim'}</button>
+                        <button className={`btn btn-sm ${editMode ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setEditMode(m => !m)}>{editMode ? 'Edit ON' : 'Edit'}</button>
+                        {editMode && <React.Fragment>
+                          <button className={`btn btn-sm ${showGrid ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 8px', fontSize:11}} onClick={() => setShowGrid(g => !g)}>Grid</button>
+                          <select value={gridSize} onChange={e => setGridSize(parseFloat(e.target.value))} style={{padding:'2px 4px', fontSize:11, border:'1px solid #E5E7EB', borderRadius:4}}>
+                            <option value={0}>Off</option>
+                            <option value={1}>1mm</option>
+                            <option value={2}>2mm</option>
+                            <option value={5}>5mm</option>
+                            <option value={10}>10mm</option>
+                          </select>
+                        </React.Fragment>}
                       </React.Fragment>
                     ) : (
                       <React.Fragment>
@@ -2590,19 +2743,26 @@
                 {useModular ? (
                   /* ========== MODULAR RENDERER ========== */
                   (() => {
-                    const tpl = makeDefaultTemplate();
                     const content = { frontCover, backPage, referrals };
                     const chapter = { id: sheet.chapter_id, name: sheet.chapter_name, meeting_location: sheet.meeting_location, meeting_address: sheet.shipping_address };
                     return (
                       <ModularRenderer
-                        template={tpl}
+                        template={template}
                         content={content}
                         sheet={sheet}
                         chapter={chapter}
                         members={members}
+                        placeholders={placeholders}
+                        placeholdersBack={placeholdersBack}
                         zoom={printing ? 1 : modularZoom}
                         showTrim={!printing && showTrim}
                         editing={!printing}
+                        editMode={!printing && editMode}
+                        showGrid={showGrid}
+                        gridSize={gridSize}
+                        selectedBlockId={selectedBlockId}
+                        onSelectBlock={setSelectedBlockId}
+                        onFrameChange={updateBlockFrame}
                       />
                     );
                   })()
@@ -2830,6 +2990,66 @@
 
               {/* RIGHT PANEL - EDITOR */}
               <div className="ts-panel" style={{alignSelf:'start', position:'sticky', top:80}}>
+                {/* Block properties panel - shown when a block is selected in modular edit mode */}
+                {useModular && editMode && selectedBlockId && (() => {
+                  const sel = findSelected();
+                  if (!sel) return null;
+                  const f = tsmResolveFrame(sel.block);
+                  const setF = (k, v) => updateBlockFrame(sel.page.id, sel.block.id, { ...f, [k]: parseFloat(v) || 0 });
+                  return (
+                    <div style={{padding:14, borderBottom:'1px solid #E5E7EB'}}>
+                      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10}}>
+                        <h4 style={{fontSize:13, fontWeight:700}}>{(TSM_BLOCKS[sel.block.type] && TSM_BLOCKS[sel.block.type].label) || sel.block.type}</h4>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setSelectedBlockId(null)} style={{padding:4,color:'#666'}}>×</button>
+                      </div>
+                      <div style={{fontSize:11, color:'#666', marginBottom:6}}>Page: {sel.page.id}{sel.block.bleed ? ` · bleed: ${sel.block.bleed}` : ''}</div>
+                      <div className="grid-2" style={{gap:8, marginBottom:8}}>
+                        <div className="form-group" style={{marginBottom:0}}>
+                          <label style={{fontSize:11}}>X (mm)</label>
+                          <input type="number" step="0.1" value={f.x} onChange={e => setF('x', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                        <div className="form-group" style={{marginBottom:0}}>
+                          <label style={{fontSize:11}}>Y (mm)</label>
+                          <input type="number" step="0.1" value={f.y} onChange={e => setF('y', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                        <div className="form-group" style={{marginBottom:0}}>
+                          <label style={{fontSize:11}}>W (mm)</label>
+                          <input type="number" step="0.1" value={f.w} onChange={e => setF('w', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                        <div className="form-group" style={{marginBottom:0}}>
+                          <label style={{fontSize:11}}>H (mm)</label>
+                          <input type="number" step="0.1" value={f.h} onChange={e => setF('h', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                      </div>
+                      {/* Common per-block fields */}
+                      {sel.block.fields && sel.block.fields.title !== undefined && (
+                        <div className="form-group" style={{marginBottom:8}}>
+                          <label style={{fontSize:11}}>Title</label>
+                          <input value={sel.block.fields.title || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'title', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                      )}
+                      {sel.block.type === 'header_bar' && (
+                        <div className="form-group" style={{marginBottom:8}}>
+                          <label style={{fontSize:11}}>Subtitle</label>
+                          <input value={sel.block.fields.subtitle || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'subtitle', e.target.value)} placeholder="Member Referral Request" style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                      )}
+                      {sel.block.type === 'footer_bar' && (
+                        <div className="form-group" style={{marginBottom:8}}>
+                          <label style={{fontSize:11}}>Footer text</label>
+                          <input value={sel.block.fields.text || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'text', e.target.value)} style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                      )}
+                      {sel.block.type === 'welcome_title' && (
+                        <div className="form-group" style={{marginBottom:8}}>
+                          <label style={{fontSize:11}}>Override text (blank = auto)</label>
+                          <input value={sel.block.fields.text || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'text', e.target.value)} placeholder="Welcome to BNI Royals" style={{padding:'5px 8px', fontSize:12}} />
+                        </div>
+                      )}
+                      <div style={{fontSize:11, color:'#888', marginTop:6}}>Drag the block on canvas to move. Drag the corner handles to resize. Snap step set in toolbar.</div>
+                    </div>
+                  );
+                })()}
                 <div className="tabs" style={{padding:'0 12px', display:'flex', overflowX:'auto'}}>
                   <div className={`tab ${activeTab==='front_cover'?'active':''}`} onClick={() => {setActiveTab('front_cover');setActivePage('front');}} style={{whiteSpace:'nowrap',fontSize:13}}>Front</div>
                   <div className={`tab ${activeTab==='referrals'?'active':''}`} onClick={() => {setActiveTab('referrals');setActivePage('inside_left');}} style={{whiteSpace:'nowrap',fontSize:13}}>Members ({referrals.length})</div>
