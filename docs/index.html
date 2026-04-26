@@ -180,6 +180,7 @@
     /* Referral table - fills full page height, source-image scale (2665x3692) */
     .ts-ref { width: 100%; border-collapse: collapse; font-size: 28px; line-height: 1.15; }
     .ts-ref th { padding: 12px; text-align: center; font-weight: 700; font-size: 28px; border-bottom: 3px solid #999; background: white; color: #333; }
+    .ts-ref tr { height: 215px; }
     .ts-ref td { border-bottom: 2px solid #ddd; vertical-align: middle; padding: 10px; }
     .ts-ref tr:nth-child(even) td { background: transparent; }
     .ts-ref .rc-num { width: 70px; text-align: center; font-weight: 700; font-size: 30px; vertical-align: middle; }
@@ -253,6 +254,289 @@
     .search-input input:focus { border-color: var(--bni-red); }
     .search-input svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--bni-grey-light); }
 
+    /* ========== MODULAR TRADESHEET SYSTEM ==========
+       Page-builder approach. Pages are 216 x 303 mm (A4 + 3mm bleed on every edge).
+       The trim area (the visible 210 x 297 mm) is a 12-col x 70-row grid.
+       Blocks declare their col/row span and an optional bleed direction. */
+
+    /* Editor canvas */
+    .tsm-canvas { background:#c8c8c8; border-radius:var(--radius-lg); padding:24px; min-height:700px; overflow:auto; }
+    .tsm-stack { display:flex; flex-direction:column; align-items:center; gap:24px; }
+
+    /* One full bleed page - this is what the printer receives, unscaled */
+    .tsm-page {
+      width: 216mm;
+      height: 303mm;
+      position: relative;
+      background: white;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.25);
+      overflow: hidden;
+      font-family: 'Helvetica Neue', 'HelveticaNeueLTStd', 'Roboto', Helvetica, Arial, sans-serif;
+      color: #1a1a1a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .tsm-page * { box-sizing: border-box; }
+
+    /* Faint dashed trim line for the editor (inside .tsm-page at 3mm offset) - hidden in print */
+    .tsm-trim-guide {
+      position: absolute; top: 3mm; left: 3mm; right: 3mm; bottom: 3mm;
+      border: 1px dashed rgba(0,0,255,0.18);
+      pointer-events: none; z-index: 999;
+    }
+
+    /* Safe area = trim minus implied 0 inner margin (we use explicit per-block margins) */
+    .tsm-safe {
+      position: absolute; top: 3mm; left: 3mm;
+      width: 210mm; height: 297mm;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(70, 1fr); /* ~4.24mm per row */
+      gap: 0;
+    }
+    /* Bleed layer - blocks placed outside the safe grid so they can extend past trim */
+    .tsm-bleed-layer { position:absolute; inset:0; pointer-events:none; }
+    .tsm-bleed-layer > * { pointer-events:auto; }
+
+    /* === BLOCK BASE === */
+    .tsm-block { position:relative; overflow:hidden; }
+
+    /* Bleed-extending wrappers (used when a block is placed in .tsm-bleed-layer) */
+    .tsm-block-bleed { position:absolute; }
+
+    /* === HEADER BAR === Red top bar with chapter logo + date/venue panel */
+    .tsm-header {
+      background: var(--bni-red);
+      color: white;
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .tsm-header__brand { flex: 1; display:flex; align-items:center; padding: 4mm 6mm 4mm 6mm; gap: 3mm; }
+    .tsm-header__logo { font-weight: 900; font-size: 11.5mm; letter-spacing: 0.3mm; line-height: 1; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .tsm-header__chapter { font-weight: 200; font-size: 11.5mm; letter-spacing: 1.6mm; text-transform: uppercase; line-height: 1; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .tsm-header__sub { margin-left: auto; font-weight: 200; font-size: 7mm; letter-spacing: 1.2mm; text-transform: uppercase; line-height: 1; padding-right: 6mm; align-self: center; }
+    .tsm-header__panel {
+      background: var(--bni-red);
+      width: 75mm;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 3mm 5mm 4mm 5mm;
+      text-align: center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: white;
+      gap: 1.2mm;
+    }
+    .tsm-header__panel--detached {
+      position: absolute; top: 4mm; right: 6mm; bottom: 4mm; width: 70mm;
+      border-left: 0;
+    }
+    .tsm-header__date { font-size: 5mm; line-height: 1.05; font-weight: 200; letter-spacing: -0.05mm; }
+    .tsm-header__date b { font-weight: 600; }
+    .tsm-header__date sup { font-size: 0.6em; font-weight: 600; vertical-align: super; }
+    .tsm-header__rule { width: 60%; height: 0.4mm; background: white; opacity: 0.9; margin: 0.6mm 0; }
+    .tsm-header__venue { font-size: 4.4mm; font-weight: 200; line-height: 1.15; }
+    .tsm-header__address { font-size: 3.6mm; font-weight: 200; line-height: 1.15; }
+
+    /* === WELCOME TITLE === Outlined hairline title under header bar */
+    .tsm-welcome {
+      width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 200;
+      font-size: 14.5mm;
+      letter-spacing: 0.4mm;
+      color: var(--bni-red);
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 0 6mm;
+      white-space: nowrap;
+    }
+
+    /* === SECTION HEADER (red bar with white text) === Reusable for "BNI Meeting Agenda" etc */
+    .tsm-section-h {
+      background: var(--bni-red);
+      color: white;
+      font-weight: 700;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      padding: 1.2mm 3mm;
+      font-size: 4.5mm;
+      line-height: 1.1;
+      letter-spacing: 0.05mm;
+    }
+
+    /* === MEETING AGENDA === Numbered list */
+    .tsm-agenda { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 1.5mm 3mm 0; font-size: 3.0mm; line-height: 1.32; color: #2a2a2a; }
+    .tsm-agenda ol { list-style: none; counter-reset: ag; padding-left: 0; }
+    .tsm-agenda li { counter-increment: ag; position: relative; padding: 0.1mm 0 0.1mm 6mm; }
+    .tsm-agenda li::before { content: counter(ag) "."; position: absolute; left: 0; width: 5.5mm; text-align: left; font-weight: 600; color: var(--bni-red); }
+
+    /* === PHILOSOPHY === Body paragraph block */
+    .tsm-phil { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 0 4mm; }
+    .tsm-phil__title { color: var(--bni-red); font-weight: 800; font-size: 5.5mm; line-height: 1.1; padding: 0; margin-bottom: 1.5mm; }
+    .tsm-phil__body { font-size: 3.4mm; line-height: 1.45; color: #1a1a1a; }
+    .tsm-phil__body p { margin: 0 0 2mm 0; }
+
+    /* === VISITOR RESOURCES === Red panel with QR */
+    .tsm-vr { background: var(--bni-red); color: white; padding: 3mm; display: flex; flex-direction: column; align-items: center; gap: 1.5mm; height: 100%; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; }
+    .tsm-vr__title { font-weight: 800; font-size: 5.2mm; line-height: 1.05; }
+    .tsm-vr__msg { font-weight: 300; font-size: 2.7mm; line-height: 1.3; padding: 0 1mm; }
+    .tsm-vr__qr { background: white; padding: 1mm; border-radius: 0.5mm; width: 26mm; height: 26mm; display: flex; align-items:center; justify-content:center; }
+    .tsm-vr__qr img { width:100%; height:100%; object-fit:contain; }
+    .tsm-vr__qr-fallback { width:100%; height:100%; background: repeating-linear-gradient(45deg, #fff 0 1mm, #000 1mm 1.6mm); }
+
+    /* === LEADERSHIP TEAM === 2-col table that auto-grows */
+    .tsm-lead { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .tsm-lead__rows { flex: 1; display: flex; flex-direction: column; }
+    .tsm-lead__row { display: grid; grid-template-columns: 49% 51%; align-items: center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; }
+    .tsm-lead__row:nth-child(odd) { background: #ffffff; }
+    .tsm-lead__row:nth-child(even) { background: #FBE5E7; }
+    .tsm-lead__role { font-weight: 700; color: #1a1a1a; }
+    .tsm-lead__name { font-weight: 400; color: #1a1a1a; }
+
+    /* === SPEAKER ROSTER === Date / name+category alternating rows */
+    .tsm-roster { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .tsm-roster__rows { flex: 1; display: flex; flex-direction: column; }
+    .tsm-roster__row { flex:1; display:grid; grid-template-columns: 26% 74%; align-items:center; padding: 0.8mm 2mm; font-size: 3.0mm; line-height: 1.15; }
+    .tsm-roster__row:nth-child(odd) { background: white; }
+    .tsm-roster__row:nth-child(even) { background: #FBE5E7; }
+    .tsm-roster__date { font-weight: 600; color:#1a1a1a; }
+    .tsm-roster__name { font-weight: 600; color:#1a1a1a; }
+    .tsm-roster__cat { font-weight: 400; color: var(--bni-red); font-size: 2.6mm; }
+    .tsm-roster__note { padding: 1.2mm 2mm; background: #FFEDA8; font-size: 2.6mm; color:#444; line-height: 1.25; }
+
+    /* === PHOTO + CAPTION === */
+    .tsm-photo { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .tsm-photo__img { flex:1; background:#eee no-repeat center/cover; min-height: 0; }
+    .tsm-photo__cap { font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2.5mm; line-height:1.25; padding: 1.2mm 2mm 0; color:#444; }
+
+    /* === MEMBER REFERRAL TABLE === The paginating workhorse */
+    .tsm-mref { width: 100%; height: 100%; display: flex; flex-direction: column; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; border: 1px solid #d9d9d9; }
+    .tsm-mref__head { display:grid; grid-template-columns: 6% 32% 22% 18% 22%; background: white; border-bottom: 0.5mm solid var(--bni-red); }
+    .tsm-mref__head > div { padding: 1.5mm 2mm; font-weight: 700; color:#222; font-size: 3.4mm; text-align:center; letter-spacing:0.1mm; }
+    .tsm-mref__head > div:first-child { text-align:center; }
+    .tsm-mref__body { flex:1; display:flex; flex-direction:column; }
+    .tsm-mref__row { display:grid; grid-template-columns: 6% 32% 22% 18% 22%; border-bottom: 0.25mm solid #d9d9d9; align-items: stretch; }
+    .tsm-mref__row:last-child { border-bottom: 0; }
+    .tsm-mref__row.alt { background: #FBE5E7; }
+    .tsm-mref__row.empty { background: white; }
+    .tsm-mref__row.designation-presenting { background: #D1B4D7; }
+    .tsm-mref__row.designation-presenting .tsm-mref__req { background: #F3ECF6; }
+    .tsm-mref__row.designation-golden { background: #FFED00; }
+    .tsm-mref__row.designation-golden .tsm-mref__req { background: #FFF7B2; }
+    .tsm-mref__row.designation-imnew { background: #C3DBAF; }
+    .tsm-mref__row.designation-imnew .tsm-mref__req { background: #F1F6ED; }
+    .tsm-mref__num { display:flex; align-items:center; justify-content:center; font-weight: 700; font-size: 3.2mm; color:#222; }
+    .tsm-mref__member { padding: 1mm 2mm; display:flex; flex-direction: column; justify-content: center; gap: 0.2mm; text-align:center; align-items:center; }
+    .tsm-mref__member .name { font-weight: 700; font-size: 3.2mm; line-height: 1.1; color:#111; }
+    .tsm-mref__member .phone { font-size: 2.7mm; line-height: 1.1; color:#333; }
+    .tsm-mref__member .email { font-size: 2.5mm; line-height: 1.1; color:#555; word-break:break-all; }
+    .tsm-mref__member .role { font-size: 2.5mm; line-height: 1.1; color: var(--bni-red); font-style: italic; }
+    .tsm-mref__biz { padding: 1mm 2mm; display:flex; align-items:center; justify-content:center; font-size: 2.9mm; text-align:center; line-height:1.15; }
+    .tsm-mref__cat { padding: 1mm 2mm; display:flex; align-items:center; justify-content:center; font-size: 2.9mm; text-align:center; line-height:1.15; }
+    .tsm-mref__req { padding: 1mm 2mm; border-left: 0.4mm solid #d9d9d9; background: inherit; position: relative; display:flex; align-items:center; justify-content: flex-end; }
+    .tsm-mref__req-overlay { position: absolute; inset: 0; display:flex; align-items:center; justify-content:center; font-weight: 900; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1; pointer-events:none; }
+    .tsm-mref__req-overlay--presenting { color: white; font-size: 7mm; letter-spacing: 0.2mm; text-shadow: 0 0 1mm rgba(0,0,0,0.15); }
+    .tsm-mref__req-overlay--golden { color: white; font-size: 8mm; letter-spacing: 0.3mm; text-shadow: 0 0 1mm rgba(0,0,0,0.2); }
+    .tsm-mref__req-overlay--imnew { color: white; font-size: 7mm; letter-spacing: 0.2mm; text-shadow: 0 0 1mm rgba(0,0,0,0.15); }
+    .tsm-mref__special { font-style: italic; color:#9a9a9a; font-size: 2.8mm; text-align:center; padding: 1mm; align-self:center; justify-self:center; grid-column: 2 / span 1; }
+
+    /* === UPCOMING DATES === */
+    .tsm-dates { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
+    .tsm-dates__head { display:grid; grid-template-columns: 25% 75%; padding: 1.2mm 2mm; font-weight:700; font-size: 3.2mm; background: white; border-bottom: 0.4mm solid var(--bni-red); color: #222; }
+    .tsm-dates__rows { flex:1; display:flex; flex-direction:column; }
+    .tsm-dates__row { flex:1; display:grid; grid-template-columns: 25% 75%; align-items:center; padding: 0.8mm 2mm; font-size: 3.2mm; line-height: 1.2; }
+    .tsm-dates__row:nth-child(odd) { background: white; }
+    .tsm-dates__row:nth-child(even) { background: #FBE5E7; }
+    .tsm-dates__row.highlight { background: #FBE5E7; font-weight: 700; }
+    .tsm-dates__date { color:#1a1a1a; }
+    .tsm-dates__event { color:#1a1a1a; }
+
+    /* === FEATURE PRESENTER === */
+    .tsm-feat { background: #F1F6ED; padding: 2mm 3mm; height: 100%; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; gap: 0.6mm; position: relative; }
+    .tsm-feat__title { font-weight: 800; font-size: 4.4mm; color: #1a1a1a; }
+    .tsm-feat__sub { font-size: 2.7mm; font-style: italic; color:#333; }
+    .tsm-feat__person { font-weight: 700; font-size: 4.4mm; color: var(--bni-red); }
+    .tsm-feat__company { font-size: 3.4mm; color:#1a1a1a; }
+    .tsm-feat__mic { position:absolute; right: 2mm; top: 50%; transform: translateY(-50%); width: 22mm; height: 22mm; opacity: 0.85; background: no-repeat center/contain; }
+
+    .tsm-next { background: white; padding: 2mm 3mm; height: 100%; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .tsm-next__label { font-size: 3mm; color:#666; margin-bottom: 0.5mm; }
+    .tsm-next__person { font-weight: 700; font-size: 4.4mm; color: var(--bni-red); }
+    .tsm-next__company { font-size: 3.4mm; color:#1a1a1a; }
+
+    /* === TARGETING OCCUPATIONS === 2-col list */
+    .tsm-tgt { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
+    .tsm-tgt__rows { flex:1; display:flex; flex-direction:column; }
+    .tsm-tgt__row { flex:1; display:grid; grid-template-columns: 1fr 1fr; align-items:center; font-size: 3.0mm; }
+    .tsm-tgt__row:nth-child(odd) { background: white; }
+    .tsm-tgt__row:nth-child(even) { background: #FBE5E7; }
+    .tsm-tgt__cell { text-align:center; padding: 0.8mm 2mm; line-height:1.2; }
+
+    /* === PODCASTS === Tile row */
+    .tsm-pod { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; gap: 1.5mm; padding: 1.5mm 0 0; }
+    .tsm-pod__row { flex:1; display:grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; }
+    .tsm-pod__tile { display:flex; flex-direction:column; gap: 0.8mm; }
+    .tsm-pod__img { background:#ddd no-repeat center/contain; aspect-ratio: 1 / 1; border-radius: 0.5mm; }
+    .tsm-pod__name { font-weight: 700; font-size: 2.6mm; line-height: 1.15; }
+    .tsm-pod__host { font-size: 2.3mm; color:#444; line-height: 1.2; }
+    .tsm-pod__meta { font-size: 2.3mm; color:#888; }
+    .tsm-pod__meta b { color: var(--bni-red); font-weight: 700; }
+
+    /* === LINED WRITING AREA === Education Notes / I Have */
+    .tsm-lined { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; }
+    .tsm-lined__head { padding: 0 0 1mm 0; }
+    .tsm-lined__title { color: var(--bni-red); font-weight: 800; font-size: 5.2mm; line-height: 1.05; display:inline-block; }
+    .tsm-lined__sub { font-style: italic; font-size: 3mm; color:#555; margin-left: 2mm; }
+    .tsm-lined__body { flex:1; background: repeating-linear-gradient(to bottom, transparent 0 5.5mm, #c8c8c8 5.5mm 5.7mm); }
+
+    /* === VP REPORT === */
+    .tsm-vp { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; height:100%; display:flex; flex-direction:column; border: 0.3mm solid #ccc; }
+    .tsm-vp__h { background: var(--bni-red); color: white; padding: 1.5mm 2mm; font-weight: 800; font-size: 4mm; }
+    .tsm-vp__head { display:grid; grid-template-columns: 40% 20% 20% 20%; background: var(--bni-red); color: white; }
+    .tsm-vp__head > div { padding: 1mm 2mm; font-size: 2.6mm; font-weight: 700; text-align: center; line-height: 1.2; }
+    .tsm-vp__head > div:first-child { text-align: left; }
+    .tsm-vp__rows { flex:1; display:flex; flex-direction:column; }
+    .tsm-vp__row { flex:1; display:grid; grid-template-columns: 40% 20% 20% 20%; border-bottom: 0.2mm solid #ddd; }
+    .tsm-vp__row:last-child { border-bottom: 0; }
+    .tsm-vp__row > div { padding: 0.8mm 2mm; font-size: 2.7mm; display:flex; align-items:center; }
+    .tsm-vp__row > div:not(:first-child) { justify-content:center; border-left: 0.2mm solid #ddd; }
+    .tsm-vp__row.total { font-weight: 700; }
+
+    /* === SCAN QR (Facebook) === */
+    .tsm-scan { background: var(--bni-red); color: white; padding: 2mm; height: 100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 1.5mm; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; }
+    .tsm-scan__title { font-weight: 800; font-size: 5.2mm; line-height: 1.05; }
+    .tsm-scan__qr { background: white; width: 28mm; height: 28mm; display:flex; align-items:center; justify-content:center; }
+    .tsm-scan__qr-fallback { width:90%; height:90%; background: repeating-linear-gradient(45deg, #fff 0 1mm, #000 1mm 1.6mm); }
+    .tsm-scan__qr img { width:100%; height:100%; object-fit:contain; }
+
+    /* === FOOTER BAR === Red bottom bar (uses bleed) */
+    .tsm-footer {
+      background: var(--bni-red); color: white;
+      width: 100%; height: 100%;
+      display:flex; align-items:center; justify-content:center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700; font-size: 4.6mm; letter-spacing: 0.05mm;
+      text-align: center;
+      padding: 0 6mm;
+    }
+
+    /* === SPONSOR LOGO === */
+    .tsm-sponsor { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding: 1mm; }
+    .tsm-sponsor img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    /* === EDITOR HELPERS === */
+    .tsm-block-editor-outline { outline: 1px dashed transparent; }
+    .tsm-edit-mode .tsm-block-editor-outline { outline-color: rgba(207,32,48,0.35); }
+    .tsm-edit-mode .tsm-block-editor-outline:hover { outline-color: rgba(207,32,48,1); outline-style: solid; }
+
+    /* Scaling wrapper - lets us preview pages at any zoom */
+    .tsm-scale-wrap { position: relative; overflow: hidden; }
+    .tsm-scale-wrap > .tsm-page { transform-origin: top left; }
+
+    /* Page-break helper between pages in print */
+    .tsm-pagebreak { display:none; }
+
     /* Print styles for trade sheet - 216x303mm (A4 + 3mm bleed) */
     .print-page-break { display: none; }
 
@@ -275,6 +559,12 @@
     .print-mode .ts-scale-wrap { width: 216mm !important; height: 303mm !important; overflow: hidden !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
     .print-mode .ts-a4 { width: 210mm !important; height: 297mm !important; transform: none !important; box-shadow: none !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     .print-mode .print-page-break { display: block !important; page-break-after: always !important; break-after: page !important; height: 0 !important; }
+    /* Modular print-mode rules */
+    .print-mode .tsm-canvas, .print-mode .tsm-stack { background:white !important; padding:0 !important; gap:0 !important; }
+    .print-mode .tsm-scale-wrap { transform: none !important; width: 216mm !important; height: 303mm !important; }
+    .print-mode .tsm-page { box-shadow: none !important; transform: none !important; page-break-after: always !important; break-after: page !important; }
+    .print-mode .tsm-page:last-of-type { page-break-after: auto !important; break-after: auto !important; }
+    .print-mode .tsm-trim-guide { display: none !important; }
 
     @media print {
       @page { size: 216mm 303mm; margin: 0; }
@@ -282,16 +572,22 @@
       body { margin: 0 !important; padding: 0 !important; background: white !important; }
       .sidebar, .page-header, .ts-panel, .no-print, .status-pipeline,
       .tabs { display: none !important; }
-      .app-layout, .main-content, .page-body, .ts-editor, .ts-canvas {
+      .app-layout, .main-content, .page-body, .ts-editor, .ts-canvas, .tsm-canvas, .tsm-stack {
         display: block !important; margin: 0 !important; padding: 0 !important;
         background: white !important; border: none !important; border-radius: 0 !important;
         min-height: auto !important; max-height: none !important; overflow: visible !important;
-        width: auto !important;
+        width: auto !important; gap: 0 !important;
       }
       .main-content { margin-left: 0 !important; }
       .ts-scale-wrap { width: 216mm !important; height: 303mm !important; overflow: hidden !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
       .ts-a4 { width: 210mm !important; height: 297mm !important; transform: none !important; box-shadow: none !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-size: 100% 100% !important; }
       .print-page-break { display: block !important; page-break-after: always !important; break-after: page !important; height: 0 !important; }
+      /* Modular system print rules */
+      .tsm-scale-wrap { transform: none !important; width: 216mm !important; height: 303mm !important; overflow: visible !important; }
+      .tsm-page { box-shadow: none !important; transform: none !important; width: 216mm !important; height: 303mm !important; page-break-after: always !important; break-after: page !important; }
+      .tsm-page:last-of-type { page-break-after: auto !important; break-after: auto !important; }
+      .tsm-trim-guide { display: none !important; }
+      .tsm-block-editor-outline { outline: none !important; }
       /* Ensure all backgrounds print at full color */
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     }
@@ -1109,6 +1405,801 @@
       );
     }
 
+    // ====================================================================
+    // ============== MODULAR TRADESHEET SYSTEM ===========================
+    // ====================================================================
+    // Pages are 216 x 303 mm (A4 + 3mm bleed). Trim safe area is 210 x 297
+    // mm placed inside, divided into a 12 col x 70 row grid (~4.24mm row).
+    // Blocks declare {col:{start,span}, row:{start,span}} plus optional bleed.
+    // The renderer takes a template + content + members and outputs all
+    // pages, including auto-paginated member referral rows.
+
+    // ---------- helpers ----------
+    function tsmFormatLongDate(dateStr) {
+      if (!dateStr) return null;
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return null;
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const dn = d.getUTCDate();
+        const suffix = (dn % 10 === 1 && dn !== 11) ? 'st' : (dn % 10 === 2 && dn !== 12) ? 'nd' : (dn % 10 === 3 && dn !== 13) ? 'rd' : 'th';
+        return { dayName: days[d.getUTCDay()], dayNum: dn, suffix, monthName: months[d.getUTCMonth()], year: d.getUTCFullYear() };
+      } catch(e) { return null; }
+    }
+
+    function tsmFormatShortDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return d.getUTCDate() + ' ' + months[d.getUTCMonth()];
+      } catch(e) { return dateStr; }
+    }
+
+    // Convert grid coords to inline style. Bleed extends 3mm past trim.
+    function tsmBlockStyle(block) {
+      const s = {};
+      if (block.col) {
+        s.gridColumnStart = block.col.start;
+        s.gridColumnEnd = `span ${block.col.span}`;
+      }
+      if (block.row) {
+        s.gridRowStart = block.row.start;
+        s.gridRowEnd = `span ${block.row.span}`;
+      }
+      return s;
+    }
+
+    // Compute bleed wrapper style for blocks that bleed (live in bleed-layer, not safe-grid)
+    // Block.row/col are in safe-grid units; we translate to mm + add 3mm where bleed applies.
+    function tsmBleedStyle(block) {
+      // Safe area: 210mm x 297mm, 12 cols x 70 rows
+      const colWmm = 210 / 12;
+      const rowHmm = 297 / 70;
+      const left = (block.col.start - 1) * colWmm;
+      const top = (block.row.start - 1) * rowHmm;
+      const width = block.col.span * colWmm;
+      const height = block.row.span * rowHmm;
+      const b = block.bleed || '';
+      const expandLeft = (b === 'left' || b === 'all' || b === 'horizontal') ? 3 : 0;
+      const expandRight = (b === 'right' || b === 'all' || b === 'horizontal') ? 3 : 0;
+      const expandTop = (b === 'top' || b === 'all' || b === 'vertical') ? 3 : 0;
+      const expandBottom = (b === 'bottom' || b === 'all' || b === 'vertical') ? 3 : 0;
+      return {
+        position: 'absolute',
+        left: `${3 + left - expandLeft}mm`,
+        top: `${3 + top - expandTop}mm`,
+        width: `${width + expandLeft + expandRight}mm`,
+        height: `${height + expandTop + expandBottom}mm`,
+      };
+    }
+
+    // ---------- block components ----------
+    // Each block receives { fields, content, ctx } where:
+    //   fields: per-block configured options (from template)
+    //   content: chapter trade-sheet content (frontCover, backPage, members, etc.)
+    //   ctx: { chapter, sheet, members, pageIndex, totalPages, designations, ... }
+
+    function BlkHeaderBar({ fields, content, ctx }) {
+      const chapterName = (content.frontCover.headline || ctx.chapter.name || '').replace(/^BNI\s*/i, '').toUpperCase();
+      const subtitle = fields.subtitle || '';
+      const showDatePanel = fields.showDatePanel !== false;
+      const dateObj = tsmFormatLongDate(content.frontCover.date || ctx.sheet.week_date);
+
+      return (
+        <div className="tsm-header">
+          <div className="tsm-header__brand">
+            <span className="tsm-header__logo">BNI</span>
+            <span className="tsm-header__chapter">{chapterName}</span>
+            {subtitle && <span className="tsm-header__sub">{subtitle}</span>}
+          </div>
+          {showDatePanel && (
+            <div className="tsm-header__panel">
+              {dateObj ? (
+                <div className="tsm-header__date">
+                  <span>{dateObj.dayName} </span>
+                  <b>{dateObj.dayNum}</b>
+                  <sup>{dateObj.suffix}</sup>
+                  <b> {dateObj.monthName} {dateObj.year}</b>
+                </div>
+              ) : null}
+              <div className="tsm-header__rule" />
+              <div className="tsm-header__venue">{content.frontCover.venue || ctx.chapter.meeting_location || ''}</div>
+              <div className="tsm-header__address">{content.frontCover.venue_address || ctx.chapter.meeting_address || ''}</div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function BlkWelcomeTitle({ fields, content, ctx }) {
+      const chapterName = (content.frontCover.headline || ctx.chapter.name || '').replace(/^BNI\s*/i, '').toUpperCase();
+      const text = (fields.text || `Welcome to BNI ${chapterName}`).toUpperCase();
+      return <div className="tsm-welcome">{text}</div>;
+    }
+
+    function BlkMeetingAgenda({ fields, content, ctx }) {
+      const items = (content.frontCover.agenda && content.frontCover.agenda.length) ? content.frontCover.agenda : (fields.defaultItems || []);
+      return (
+        <div className="tsm-block">
+          <div className="tsm-section-h">{fields.title || 'BNI Meeting Agenda'}</div>
+          <div className="tsm-agenda">
+            <ol>{items.map((it, i) => <li key={i}>{it}</li>)}</ol>
+          </div>
+        </div>
+      );
+    }
+
+    function BlkPhilosophy({ fields, content, ctx }) {
+      const body = content.frontCover.philosophy || fields.defaultText || '';
+      return (
+        <div className="tsm-phil">
+          <div className="tsm-phil__title">{fields.title || "BNI's Philosophy"}</div>
+          <div className="tsm-phil__body">
+            {body.split(/\n\n+/).map((p, i) => <p key={i}>{p}</p>)}
+          </div>
+        </div>
+      );
+    }
+
+    function BlkVisitorResources({ fields, content, ctx }) {
+      const qr = content.backPage.qr_image || fields.qrUrl || '';
+      return (
+        <div className="tsm-vr">
+          <div className="tsm-vr__title">{fields.title || 'Visitor Resources'}</div>
+          <div className="tsm-vr__msg">{fields.msg || 'Thanks for visiting our chapter today, here are some helpful resources.'}</div>
+          <div className="tsm-vr__qr">{qr ? <img src={qr} alt="QR" /> : <div className="tsm-vr__qr-fallback" />}</div>
+        </div>
+      );
+    }
+
+    function BlkLeadershipTeam({ fields, content, ctx }) {
+      const rows = (fields.rows || []).map(r => {
+        const v = content.frontCover[r.key];
+        return { role: r.role, name: (v && v.trim()) ? v : (content.frontCover[r.key + '__placeholder'] || r.placeholder || '') };
+      });
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-section-h">{fields.title || 'Leadership Team'}</div>
+          <div className="tsm-lead">
+            <div className="tsm-lead__rows">
+              {rows.map((r, i) => (
+                <div key={i} className="tsm-lead__row">
+                  <span className="tsm-lead__role">{r.role}</span>
+                  <span className="tsm-lead__name">{r.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function BlkSpeakerRoster({ fields, content, ctx }) {
+      const slots = fields.slots || 6;
+      const rows = [];
+      for (let i = 1; i <= slots; i++) {
+        const m = (content.frontCover['sp_member_' + i] && ctx.members.find(x => x.id === parseInt(content.frontCover['sp_member_' + i]))) || null;
+        const rawDate = content.frontCover['sp_date_' + i] || '';
+        const dt = rawDate.match(/^\d{4}-\d{2}-\d{2}$/) ? tsmFormatShortDate(rawDate) : rawDate;
+        const nm = m ? m.name : (content.frontCover['sp_name_' + i] || '');
+        const ct = m ? m.business_category : (content.frontCover['sp_cat_' + i] || '');
+        rows.push({ dt, nm, ct });
+      }
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-section-h">{fields.title || 'Speaker Roster'}</div>
+          <div className="tsm-section-h" style={{background:'#fff', color:'#222', borderBottom:'0.4mm solid var(--bni-red)', padding:'1mm 3mm', fontSize:'3.2mm', display:'grid', gridTemplateColumns:'26% 74%'}}>
+            <span>Date</span>
+            <span>{fields.subtitle || 'Spotlight Star Presenter'}</span>
+          </div>
+          <div className="tsm-roster">
+            <div className="tsm-roster__rows">
+              {rows.map((r, i) => (
+                <div key={i} className="tsm-roster__row">
+                  <span className="tsm-roster__date">{r.dt}</span>
+                  <span>
+                    <div className="tsm-roster__name">{r.nm}</div>
+                    {r.ct && <div className="tsm-roster__cat">{r.ct}</div>}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {fields.note && <div className="tsm-roster__note">{fields.note}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    function BlkPhotoCaption({ fields, content, ctx }) {
+      const url = content.frontCover.photo_url || fields.url || '';
+      const cap1 = content.frontCover.photo_caption_1 || fields.caption1 || '';
+      const cap2 = content.frontCover.photo_caption_2 || fields.caption2 || '';
+      return (
+        <div className="tsm-photo">
+          <div className="tsm-photo__img" style={{ backgroundImage: url ? `url(${url})` : 'none', background: url ? `url(${url}) no-repeat center/cover` : '#eee' }} />
+          {(cap1 || cap2) && (
+            <div className="tsm-photo__cap">
+              {cap1 && <div>{cap1}</div>}
+              {cap2 && <div>{cap2}</div>}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function BlkMemberReferral({ fields, content, ctx }) {
+      // ctx.memberRows is provided by the pagination engine (array of rows for this page).
+      // Each row: { num, member, designation, isEmpty, specialMessage }
+      const rows = ctx.memberRows || [];
+      const showHeader = fields.showHeader !== false;
+      return (
+        <div className="tsm-mref">
+          {showHeader && (
+            <div className="tsm-mref__head">
+              <div></div>
+              <div>Member/Contact</div>
+              <div>Business Name</div>
+              <div>BNI Category</div>
+              <div>Referral Request</div>
+            </div>
+          )}
+          <div className="tsm-mref__body">
+            {rows.map((r, i) => {
+              const isAlt = (r.num % 2 === 0);
+              const designation = r.designation;
+              const cls = ['tsm-mref__row'];
+              if (r.isEmpty) cls.push('empty');
+              else if (designation === 'presenting') cls.push('designation-presenting');
+              else if (designation === 'golden') cls.push('designation-golden');
+              else if (designation === 'imnew') cls.push('designation-imnew');
+              else if (isAlt) cls.push('alt');
+              return (
+                <div key={i} className={cls.join(' ')} style={{ minHeight: ctx.memberRowHeightMm ? `${ctx.memberRowHeightMm}mm` : undefined, height: ctx.memberRowHeightMm ? `${ctx.memberRowHeightMm}mm` : undefined }}>
+                  <div className="tsm-mref__num">{r.num || ''}</div>
+                  {r.isEmpty ? (
+                    <React.Fragment>
+                      <div className="tsm-mref__special">{r.specialMessage || ''}</div>
+                      <div></div>
+                      <div></div>
+                      <div className="tsm-mref__req"></div>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <div className="tsm-mref__member">
+                        <div className="name">{r.member.name}</div>
+                        {r.member.phone && <div className="phone">{r.member.phone}</div>}
+                        {r.member.email && <div className="email">{r.member.email}</div>}
+                        {r.member.role && r.member.role !== 'member' && <div className="role">{r.member.role === 'chapter_admin' ? 'Chapter Admin' : r.member.role}</div>}
+                      </div>
+                      <div className="tsm-mref__biz">{r.member.business_name || ''}</div>
+                      <div className="tsm-mref__cat">{r.member.business_category || ''}</div>
+                      <div className="tsm-mref__req">
+                        {designation === 'presenting' && <div className="tsm-mref__req-overlay tsm-mref__req-overlay--presenting">Presenting<br/>Today</div>}
+                        {designation === 'golden' && <div className="tsm-mref__req-overlay tsm-mref__req-overlay--golden">Golden<br/>Mic</div>}
+                        {designation === 'imnew' && <div className="tsm-mref__req-overlay tsm-mref__req-overlay--imnew">I'm new<br/>book a 121</div>}
+                      </div>
+                    </React.Fragment>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    function BlkUpcomingDates({ fields, content, ctx }) {
+      const slots = fields.slots || 6;
+      const rows = [];
+      for (let i = 1; i <= slots; i++) {
+        rows.push({
+          dt: content.backPage['date_' + i] || '',
+          ev: content.backPage['event_' + i] || '',
+          highlight: content.backPage['date_highlight'] === String(i),
+        });
+      }
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-section-h">{fields.title || 'Upcoming Dates'}</div>
+          <div className="tsm-dates">
+            <div className="tsm-dates__head">
+              <div>Date</div>
+              <div>Event</div>
+            </div>
+            <div className="tsm-dates__rows">
+              {rows.map((r, i) => (
+                <div key={i} className={`tsm-dates__row${r.highlight ? ' highlight' : ''}`}>
+                  <span className="tsm-dates__date">{r.dt}</span>
+                  <span className="tsm-dates__event">{r.ev}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function BlkFeaturePresenter({ fields, content, ctx }) {
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-feat" style={{flex:1}}>
+            <div className="tsm-feat__title">Feature Presentation</div>
+            <div className="tsm-feat__sub">Learn more about</div>
+            <div>
+              <span className="tsm-feat__person">{content.backPage.feature_presenter || ''}</span>
+              {content.backPage.feature_company && <span className="tsm-feat__company"> {content.backPage.feature_company}</span>}
+            </div>
+            {fields.micUrl && <div className="tsm-feat__mic" style={{ background:`url(${fields.micUrl}) no-repeat center/contain` }} />}
+          </div>
+        </div>
+      );
+    }
+
+    function BlkNextPresenter({ fields, content, ctx }) {
+      return (
+        <div className="tsm-next">
+          <div className="tsm-next__label">Next weeks presentation:</div>
+          <div className="tsm-next__person">{content.backPage.next_presenter || ''}</div>
+          {content.backPage.next_company && <div className="tsm-next__company">{content.backPage.next_company}</div>}
+        </div>
+      );
+    }
+
+    function BlkTargetingOccupations({ fields, content, ctx }) {
+      const slots = fields.slots || 7;
+      const rows = [];
+      for (let i = 0; i < slots; i++) {
+        rows.push({
+          l: content.backPage['tgt_l_' + i] || (fields.defaults && fields.defaults[i] && fields.defaults[i].l) || '',
+          r: content.backPage['tgt_r_' + i] || (fields.defaults && fields.defaults[i] && fields.defaults[i].r) || '',
+        });
+      }
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-section-h">{fields.title || 'Targeting Occupations'}</div>
+          <div className="tsm-tgt">
+            <div className="tsm-tgt__rows">
+              {rows.map((r, i) => (
+                <div key={i} className="tsm-tgt__row">
+                  <div className="tsm-tgt__cell">{r.l}</div>
+                  <div className="tsm-tgt__cell">{r.r}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function BlkPodcasts({ fields, content, ctx }) {
+      const tiles = fields.tiles || [];
+      return (
+        <div className="tsm-block" style={{display:'flex', flexDirection:'column', height:'100%'}}>
+          <div className="tsm-section-h">{fields.title || 'BNI Podcasts'}</div>
+          <div className="tsm-pod">
+            <div className="tsm-pod__row">
+              {tiles.map((t, i) => (
+                <div key={i} className="tsm-pod__tile">
+                  <div className="tsm-pod__img" style={t.image ? { background: `url(${t.image}) no-repeat center/contain` } : {}} />
+                  <div className="tsm-pod__name">{t.name}</div>
+                  <div className="tsm-pod__host">{t.host}</div>
+                  <div className="tsm-pod__meta"><b>{t.episodes}</b> {t.metaSuffix || ''}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function BlkLined({ fields, content, ctx }) {
+      return (
+        <div className="tsm-lined">
+          <div className="tsm-lined__head">
+            <span className="tsm-lined__title">{fields.title || 'Notes'}</span>
+            {fields.subtitle && <span className="tsm-lined__sub">{fields.subtitle}</span>}
+          </div>
+          <div className="tsm-lined__body" />
+        </div>
+      );
+    }
+
+    function BlkVPReport({ fields, content, ctx }) {
+      const kpis = fields.kpis || [];
+      return (
+        <div className="tsm-vp">
+          <div className="tsm-vp__h">{fields.title || 'Vice President Report'}</div>
+          <div className="tsm-vp__head">
+            <div>KPI</div>
+            <div>Last Week<br/>Actual</div>
+            <div>Weekly<br/>Budget</div>
+            <div>{fields.avgLabel || '2026 per wk average'}</div>
+          </div>
+          <div className="tsm-vp__rows">
+            {kpis.map((k, i) => (
+              <div key={i} className="tsm-vp__row">
+                <div>{k}</div><div></div><div></div><div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function BlkScanQR({ fields, content, ctx }) {
+      const qr = fields.qrImage || '';
+      return (
+        <div className="tsm-scan">
+          <div className="tsm-scan__title">{fields.title || 'Scan here for our Facebook page'}</div>
+          <div className="tsm-scan__qr">{qr ? <img src={qr} alt="QR" /> : <div className="tsm-scan__qr-fallback" />}</div>
+        </div>
+      );
+    }
+
+    function BlkFooter({ fields, content, ctx }) {
+      return <div className="tsm-footer">{fields.text || ''}</div>;
+    }
+
+    function BlkSponsor({ fields, content, ctx }) {
+      const url = content.backPage.sponsor_logo || fields.imageUrl || '';
+      return <div className="tsm-sponsor">{url ? <img src={url} alt="Sponsor" /> : null}</div>;
+    }
+
+    // Block registry
+    const TSM_BLOCKS = {
+      header_bar: { component: BlkHeaderBar, label: 'Header Bar' },
+      welcome_title: { component: BlkWelcomeTitle, label: 'Welcome Title' },
+      meeting_agenda: { component: BlkMeetingAgenda, label: 'Meeting Agenda' },
+      philosophy: { component: BlkPhilosophy, label: 'Philosophy' },
+      visitor_resources: { component: BlkVisitorResources, label: 'Visitor Resources' },
+      leadership_team: { component: BlkLeadershipTeam, label: 'Leadership Team' },
+      speaker_roster: { component: BlkSpeakerRoster, label: 'Speaker Roster' },
+      photo_caption: { component: BlkPhotoCaption, label: 'Photo + Caption' },
+      member_referral: { component: BlkMemberReferral, label: 'Member Referral Table' },
+      upcoming_dates: { component: BlkUpcomingDates, label: 'Upcoming Dates' },
+      feature_presenter: { component: BlkFeaturePresenter, label: 'Feature Presenter' },
+      next_presenter: { component: BlkNextPresenter, label: 'Next Week Presenter' },
+      targeting_occupations: { component: BlkTargetingOccupations, label: 'Targeting Occupations' },
+      podcasts: { component: BlkPodcasts, label: 'Podcasts' },
+      lined: { component: BlkLined, label: 'Lined Notes Area' },
+      vp_report: { component: BlkVPReport, label: 'VP Report' },
+      scan_qr: { component: BlkScanQR, label: 'Scan QR (Facebook)' },
+      footer_bar: { component: BlkFooter, label: 'Footer Bar' },
+      sponsor: { component: BlkSponsor, label: 'Sponsor Logo' },
+    };
+
+    // ---------- pagination engine ----------
+    // Decides how many member-pages to use, what row height to use, and which
+    // rows go on which page so the last page is filled (no big gap).
+    function tsmPaginateMembers({ referrals, designations, reservedPages, maxPages, capacity }) {
+      // capacity: { rowHeightTargetMm, rowsTargetPerPage, tableHeightMm }
+      // rowsTargetPerPage = how many rows look "right" at default size.
+      const target = capacity.rowsTargetPerPage;
+      const minRows = capacity.rowsMinPerPage;
+      const maxRows = capacity.rowsMaxPerPage;
+      const tableH = capacity.tableHeightMm;
+      const N = referrals.length;
+      // Total rows we'll show, including 2 trailing "don't miss" slots if we have any blank space on last page
+      const totalSlotsAtTarget = reservedPages * target;
+      let pages = reservedPages;
+      // If members exceed target capacity, add pages
+      if (N > pages * maxRows) {
+        const needed = Math.ceil(N / maxRows);
+        pages = Math.min(maxPages, needed);
+      }
+      // Compute rows-per-page so the last page is filled. Try to put roughly equal
+      // rows on each page, capped to minRows..maxRows.
+      // Also reserve 2 trailing slots on the very last page for the special messages
+      const showSpecialMessages = (N + 2) <= (pages * maxRows);
+      const totalRowsToRender = showSpecialMessages ? (N + 2) : N;
+      // rows per page (uniform, but the last page can have fewer if needed)
+      let rowsPerPage = Math.ceil(totalRowsToRender / pages);
+      // keep rowsPerPage in [minRows, maxRows]
+      rowsPerPage = Math.max(minRows, Math.min(maxRows, rowsPerPage));
+      // Actual row height in mm: tableH / rowsPerPage
+      const rowHeightMm = tableH / rowsPerPage;
+      // Build pages
+      const out = [];
+      let cursor = 0;
+      for (let p = 0; p < pages; p++) {
+        const remaining = totalRowsToRender - cursor;
+        const rowsThisPage = Math.min(rowsPerPage, remaining);
+        const rows = [];
+        for (let i = 0; i < rowsThisPage; i++) {
+          const slotIndex = cursor + i; // overall slot 0-based
+          const num = slotIndex + 1;
+          const isSpecialSlot = showSpecialMessages && (slotIndex === N || slotIndex === N + 1);
+          const r = referrals[slotIndex];
+          let designation = null;
+          if (designations) {
+            if (parseInt(designations.presenting_today) === num) designation = 'presenting';
+            else if (parseInt(designations.golden_mic) === num) designation = 'golden';
+            else if (parseInt(designations.im_new) === num) designation = 'imnew';
+          }
+          if (isSpecialSlot) {
+            rows.push({ num: num, isEmpty: true, specialMessage: slotIndex === N ? "Don't miss this spot!" : "Blink and it's gone." });
+          } else if (r) {
+            rows.push({ num, member: { name: r.member_name, business_name: r.business_name, business_category: r.business_category, phone: r.phone, email: r.email, role: r.role }, designation });
+          } else {
+            rows.push({ num, isEmpty: true });
+          }
+        }
+        // Pad with blank rows so the table fills its height (no gap)
+        while (rows.length < rowsPerPage) {
+          rows.push({ num: cursor + rows.length + 1, isEmpty: true });
+        }
+        out.push({ rows, rowHeightMm });
+        cursor += rowsPerPage;
+      }
+      return out;
+    }
+
+    // ---------- renderer ----------
+    function ModularPage({ page, content, ctx, showTrim }) {
+      const safeBlocks = (page.blocks || []).filter(b => !b.bleed);
+      const bleedBlocks = (page.blocks || []).filter(b => b.bleed);
+      return (
+        <div className="tsm-page">
+          {/* Bleed-extending blocks live in their own absolutely-positioned layer */}
+          <div className="tsm-bleed-layer">
+            {bleedBlocks.map((b, i) => {
+              const Comp = TSM_BLOCKS[b.type] && TSM_BLOCKS[b.type].component;
+              if (!Comp) return null;
+              return (
+                <div key={b.id || i} className="tsm-block tsm-block-editor-outline" style={tsmBleedStyle(b)}>
+                  <Comp fields={b.fields || {}} content={content} ctx={{ ...ctx, block: b }} />
+                </div>
+              );
+            })}
+          </div>
+          {/* Safe-area grid */}
+          <div className="tsm-safe">
+            {safeBlocks.map((b, i) => {
+              const Comp = TSM_BLOCKS[b.type] && TSM_BLOCKS[b.type].component;
+              if (!Comp) return null;
+              return (
+                <div key={b.id || i} className="tsm-block tsm-block-editor-outline" style={tsmBlockStyle(b)}>
+                  <Comp fields={b.fields || {}} content={content} ctx={{ ...ctx, block: b }} />
+                </div>
+              );
+            })}
+          </div>
+          {showTrim && <div className="tsm-trim-guide" />}
+        </div>
+      );
+    }
+
+    function ModularRenderer({ template, content, sheet, chapter, members, zoom = 1, showTrim = false, editing = false }) {
+      // Walk template.pages, expanding any 'member_referral' block into possibly multiple pages
+      const pages = [];
+      const reservedMemberPages = (template.pages || []).filter(p => (p.blocks || []).some(b => b.type === 'member_referral')).length;
+      const maxPages = template.maxMemberPages || 6;
+      // Compute the table height for member pages from the first member-referral block in the template
+      let memberCapacity = { rowsTargetPerPage: 14, rowsMinPerPage: 12, rowsMaxPerPage: 18, tableHeightMm: 254 };
+      const firstMrPage = (template.pages || []).find(p => (p.blocks || []).some(b => b.type === 'member_referral'));
+      if (firstMrPage) {
+        const mr = firstMrPage.blocks.find(b => b.type === 'member_referral');
+        if (mr) {
+          const rowHmm = 297 / 70;
+          memberCapacity.tableHeightMm = mr.row.span * rowHmm;
+          // target: roughly 14 rows of body at 16mm each is ~224mm including header
+          memberCapacity.rowsTargetPerPage = mr.fields && mr.fields.rowsTargetPerPage ? mr.fields.rowsTargetPerPage : 14;
+          memberCapacity.rowsMinPerPage = mr.fields && mr.fields.rowsMinPerPage ? mr.fields.rowsMinPerPage : 12;
+          memberCapacity.rowsMaxPerPage = mr.fields && mr.fields.rowsMaxPerPage ? mr.fields.rowsMaxPerPage : 18;
+        }
+      }
+      const designations = {
+        presenting_today: content.frontCover.presenting_today,
+        golden_mic: content.frontCover.golden_mic,
+        im_new: content.frontCover.im_new,
+      };
+      const memberPages = tsmPaginateMembers({ referrals: content.referrals || [], designations, reservedPages: Math.max(1, reservedMemberPages), maxPages, capacity: memberCapacity });
+
+      // Find indices of member-referral pages in the template
+      const mrIndices = [];
+      (template.pages || []).forEach((pp, i) => { if ((pp.blocks || []).some(b => b.type === 'member_referral')) mrIndices.push(i); });
+      const lastMrIndex = mrIndices.length ? mrIndices[mrIndices.length - 1] : -1;
+
+      let memberPageCursor = 0;
+      (template.pages || []).forEach((p, pageIdx) => {
+        const hasMref = (p.blocks || []).some(b => b.type === 'member_referral');
+        if (hasMref) {
+          // Consume one chunk for this template slot
+          const chunk = memberPages[memberPageCursor] || { rows: [], rowHeightMm: undefined };
+          pages.push({ pageDef: p, ctx: { memberRows: chunk.rows, memberRowHeightMm: chunk.rowHeightMm, memberPageNumber: memberPageCursor + 1, totalMemberPages: memberPages.length } });
+          memberPageCursor++;
+          // If this is the last reserved member-referral slot and we still have chunks left,
+          // re-emit clones of this same page-shape until all member chunks are placed.
+          if (pageIdx === lastMrIndex) {
+            while (memberPageCursor < memberPages.length) {
+              const c = memberPages[memberPageCursor];
+              pages.push({ pageDef: p, ctx: { memberRows: c.rows, memberRowHeightMm: c.rowHeightMm, memberPageNumber: memberPageCursor + 1, totalMemberPages: memberPages.length } });
+              memberPageCursor++;
+            }
+          }
+        } else {
+          pages.push({ pageDef: p, ctx: {} });
+        }
+      });
+
+      const baseCtx = { sheet, chapter, members, totalPages: pages.length };
+
+      return (
+        <div className="tsm-canvas">
+          <div className="tsm-stack">
+            {pages.map((p, i) => (
+              <div key={i} className="tsm-scale-wrap" style={{ width: `${216 * zoom}mm`, height: `${303 * zoom}mm` }}>
+                <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: '216mm', height: '303mm' }}>
+                  <ModularPage page={p.pageDef} content={content} ctx={{ ...baseCtx, ...p.ctx, pageIndex: i }} showTrim={showTrim} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ---------- default template ----------
+    const TSM_DEFAULT_AGENDA = [
+      'Open networking',
+      "President's welcome to visitors & leadership team introduction",
+      'Purpose and overview of BNI',
+      'Networking education',
+      'Welcome of new & renewing members',
+      'Business card box pass around',
+      'Visitor introductions',
+      "Member's weekly presentations",
+      "Who's been paying attention",
+      'Golden microphone winner',
+      "Vice president's report",
+      'Membership committee report',
+      'Speaker roster',
+      'Speaker(s) give their spotlight presentation',
+      'Referrals & testimonials.',
+      'Members pass the referrals from the week and report activity',
+      "Treasurers report and invitation to apply",
+      'Visitor orientation',
+      'BNI announcements',
+      'Door prize',
+    ];
+
+    const TSM_DEFAULT_PHILOSOPHY = "Success in BNI means being a positive and supportive member of an organisation based upon mutual support. This requires commitment to your fellow members as well as the philosophy of \"Givers Gain\u00ae\": by giving business to others, you will get business in return.\n\nOur mission is to help members increase their business through a structured, positive, and professional \"Word-of-Mouth\" program that enables them to develop long-term, meaningful relationships with quality business professionals.";
+
+    const TSM_DEFAULT_LEADERSHIP_ROWS = [
+      { role: 'President', key: 'ldr_pres' },
+      { role: 'Vice President', key: 'ldr_vp' },
+      { role: 'Secretary Treasurer', key: 'ldr_sec' },
+      { role: 'Membership Committee', key: 'ldr_mem1' },
+      { role: '', key: 'ldr_mem2' },
+      { role: '', key: 'ldr_mem3' },
+      { role: '', key: 'ldr_mem4' },
+      { role: 'Visitor Host Coordinator', key: 'ldr_vhc' },
+      { role: 'Visitor Hosts', key: 'ldr_vh1' },
+      { role: '', key: 'ldr_vh2' },
+      { role: '', key: 'ldr_vh3' },
+      { role: '', key: 'ldr_vh4' },
+      { role: '', key: 'ldr_vh5' },
+      { role: 'Education Coordinator', key: 'ldr_edu' },
+      { role: 'Mentor Coordinator', key: 'ldr_ment' },
+      { role: 'Mentors', key: 'ldr_ment1' },
+      { role: '', key: 'ldr_ment2' },
+      { role: 'Events & Growth Coordinator', key: 'ldr_events' },
+      { role: 'Go For Green Coordinator', key: 'ldr_gfg' },
+      { role: 'Social Media Coordinator/Webmaster', key: 'ldr_social' },
+      { role: 'IT Support', key: 'ldr_ts' },
+      { role: 'Director Consultant', key: 'ldr_dc' },
+    ];
+
+    const TSM_DEFAULT_TARGETING = [
+      { l: 'Allied Health Professional', r: 'Building & Pest Inspector' },
+      { l: 'Occupational Therapist', r: 'Hairdresser' },
+      { l: 'City Council Gardens', r: 'Handyman' },
+      { l: 'Private Sports Coach', r: 'Commercial Real Estate agent' },
+      { l: 'Machinery Dealership Salesperson', r: 'Masseuse' },
+      { l: 'Salesperson', r: 'NDIS Provider Support Workers' },
+      { l: 'Psychologist', r: 'Florist' },
+    ];
+
+    const TSM_DEFAULT_VP_KPIS = [
+      'Referrals Given',
+      'Visitors',
+      'One-to-Ones',
+      'Thank You For Closed Business (TYFCB)',
+      'Thank you for Closed Business - 2026 YTD (12 weeks)',
+      'Thank you for Closed Business - 2025 Total',
+      'Referrals Given - YTD 2026',
+      'Average Seat Value - Last 12 Months',
+    ];
+
+    const TSM_DEFAULT_PODCASTS = [
+      { name: 'BNI The Australian Story', host: 'Hosted by Brent Edwards & Veronica Lees-Amato', episodes: '2 Episodes', metaSuffix: '+ 1 CEU', image: 'images/podcast-auststory.jpg' },
+      { name: 'The Official BNI Podcast', host: 'Hosted by BNI Founder Dr. Ivan Misner', episodes: '4 Episodes', metaSuffix: '+ 1 CEU', image: 'images/podcast-official.png' },
+      { name: 'The Power of One Podcast', host: 'Hosted by Tim Roberts', episodes: '2 Episodes', metaSuffix: '+ 1 CEU', image: 'images/podcast-powerofone.jpg' },
+      { name: 'BNI 20 Secrets Podcast', host: 'Hosted by Chris Mutimer & Jeremy Dart', episodes: '2 Episodes', metaSuffix: '+ 1 CEU', image: 'images/podcast-20secrets.png' },
+    ];
+
+    // The default template is the BNI Royals 4-page design.
+    function makeDefaultTemplate() {
+      return {
+        id: 'default',
+        name: 'BNI Royals 4-page',
+        maxMemberPages: 6,
+        pages: [
+          // ============== PAGE 1: FRONT COVER ==============
+          {
+            id: 'page-front',
+            blocks: [
+              // Header bar - bleeds top, left, right
+              { id: 'h1', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'', showDatePanel:true } },
+              // Welcome title strip
+              { id: 'w1', type: 'welcome_title', col:{start:1,span:12}, row:{start:8,span:5}, fields:{ text:'' } },
+              // Meeting Agenda - left col
+              { id: 'a1', type: 'meeting_agenda', col:{start:1,span:4}, row:{start:13,span:32}, fields:{ title:'BNI Meeting Agenda', defaultItems: TSM_DEFAULT_AGENDA } },
+              // Philosophy - centre
+              { id: 'p1', type: 'philosophy', col:{start:5,span:5}, row:{start:13,span:18}, fields:{ title:"BNI's Philosophy", defaultText: TSM_DEFAULT_PHILOSOPHY } },
+              // Visitor Resources - right col
+              { id: 'v1', type: 'visitor_resources', col:{start:10,span:3}, row:{start:13,span:18}, fields:{ title:'Visitor Resources', msg:'Thanks for visiting our chapter today, here are some helpful resources.' } },
+              // Leadership Team - right two-thirds
+              { id: 'l1', type: 'leadership_team', col:{start:5,span:8}, row:{start:31,span:31}, fields:{ title:'Leadership Team', rows: TSM_DEFAULT_LEADERSHIP_ROWS } },
+              // Speaker Roster - bottom-left
+              { id: 's1', type: 'speaker_roster', col:{start:1,span:4}, row:{start:45,span:14}, fields:{ title:'Speaker Roster', subtitle:'Spotlight Star Presenter', slots:6, note:'Speakers Please Bring a door prize. Members Please enter your weekly STATS into BNI Connect' } },
+              // Photo + caption - bottom-left under roster
+              { id: 'ph1', type: 'photo_caption', col:{start:1,span:4}, row:{start:59,span:9}, fields:{} },
+              // Footer bar - bleeds bottom
+              { id: 'f1', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'BNI Royals' } },
+            ],
+          },
+          // ============== PAGE 2: INSIDE LEFT (members 1-N) ==============
+          {
+            id: 'page-inside-left',
+            blocks: [
+              { id: 'h2', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
+              { id: 'mr1', type: 'member_referral', col:{start:1,span:12}, row:{start:9,span:59}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
+              { id: 'f2', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'Writing it down makes you 42% more likely to bring a referral' } },
+            ],
+          },
+          // ============== PAGE 3: INSIDE RIGHT (members N+1-...) ==============
+          {
+            id: 'page-inside-right',
+            blocks: [
+              { id: 'h3', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'Member Referral Request', showDatePanel:false } },
+              { id: 'mr2', type: 'member_referral', col:{start:1,span:12}, row:{start:9,span:59}, fields:{ rowsTargetPerPage:14, rowsMinPerPage:12, rowsMaxPerPage:18 } },
+              { id: 'f3', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:'1 Referral. 1 one-to-one. 1 CEU. 1 Meeting. 1 Visitor. = Power of one' } },
+            ],
+          },
+          // ============== PAGE 4: BACK ==============
+          {
+            id: 'page-back',
+            blocks: [
+              { id: 'h4', type: 'header_bar', col:{start:1,span:12}, row:{start:1,span:7}, bleed:'all', fields:{ subtitle:'', showDatePanel:false } },
+              // Podcasts | Education Notes
+              { id: 'pod1', type: 'podcasts', col:{start:1,span:7}, row:{start:9,span:14}, fields:{ title:'BNI Podcasts', tiles: TSM_DEFAULT_PODCASTS } },
+              { id: 'edu1', type: 'lined', col:{start:8,span:5}, row:{start:9,span:8}, fields:{ title:'Education Notes', subtitle:'When you learn more, you earn more' } },
+              { id: 'feat1', type: 'feature_presenter', col:{start:8,span:5}, row:{start:17,span:6}, fields:{ micUrl: 'images/mic.png' } },
+              // Upcoming Dates | Next Presenter
+              { id: 'up1', type: 'upcoming_dates', col:{start:1,span:7}, row:{start:23,span:11}, fields:{ title:'Upcoming Dates', slots:6 } },
+              { id: 'nxt1', type: 'next_presenter', col:{start:8,span:5}, row:{start:23,span:6}, fields:{} },
+              { id: 'ihave1', type: 'lined', col:{start:8,span:5}, row:{start:29,span:13}, fields:{ title:'I Have', subtitle:'Refer to your BNI Connect App' } },
+              // Targeting Occupations | (continued)
+              { id: 'tgt1', type: 'targeting_occupations', col:{start:1,span:7}, row:{start:34,span:13}, fields:{ title:'Targeting Occupations', defaults: TSM_DEFAULT_TARGETING, slots:7 } },
+              // Scan QR | VP Report
+              { id: 'scan1', type: 'scan_qr', col:{start:1,span:3}, row:{start:47,span:14}, fields:{ title:'Scan here for our Facebook page' } },
+              { id: 'vp1', type: 'vp_report', col:{start:4,span:9}, row:{start:42,span:19}, fields:{ kpis: TSM_DEFAULT_VP_KPIS } },
+              // Footer
+              { id: 'f4', type: 'footer_bar', col:{start:1,span:12}, row:{start:68,span:3}, bleed:'all', fields:{ text:"Whether you're giving or receiving, log it to close the loop" } },
+            ],
+          },
+        ],
+      };
+    }
+
+    // ====================================================================
+    // ============== END MODULAR TRADESHEET SYSTEM =======================
+    // ====================================================================
+
     // TRADE SHEET EDITOR
     function TradeSheetEditor({ sheetId, onBack }) {
       const [sheet, setSheet] = useState(null);
@@ -1122,6 +2213,13 @@
       const [zoom, setZoom] = useState(0.164);
       const [printing, setPrinting] = useState(false);
       const [showTemplate, setShowTemplate] = useState(false);
+      // Modular renderer toggle - default ON. Old absolute-positioned renderer kept as fallback.
+      // Read ?modular=0 from URL to disable, or use the in-app toggle.
+      const [useModular, setUseModular] = useState(() => {
+        try { const p = new URLSearchParams(window.location.search); return p.get('modular') !== '0'; } catch(e) { return true; }
+      });
+      const [modularZoom, setModularZoom] = useState(0.55); // ~55% scale fits one page nicely on desktop
+      const [showTrim, setShowTrim] = useState(false);
 
       // PDF template as actual page background
       const templateBgs = {front:'images/template-front.png', inside_left:'images/template-inside-left.png', inside_right:'images/template-inside-right.png', back:'images/template-back.png'};
@@ -1463,18 +2561,52 @@
               <div style={{flex:1}}>
                 {/* Page tabs + Zoom controls */}
                 <div className="no-print" style={{display:'flex', gap:6, marginBottom:12, justifyContent:'center', alignItems:'center', flexWrap:'wrap'}}>
-                  {[{key:'front',label:'Front Cover'},{key:'inside_left',label:'Inside Left'},{key:'inside_right',label:'Inside Right'},{key:'back',label:'Back Page'}].map(p => (
+                  {!useModular && [{key:'front',label:'Front Cover'},{key:'inside_left',label:'Inside Left'},{key:'inside_right',label:'Inside Right'},{key:'back',label:'Back Page'}].map(p => (
                     <button key={p.key} className={`btn ${activePage===p.key?'btn-primary':'btn-secondary'} btn-sm`} onClick={() => setActivePage(p.key)}>{p.label}</button>
                   ))}
+                  {useModular && <span style={{fontSize:12, fontWeight:600, color:'var(--bni-grey)'}}>All pages preview {referrals.length} members</span>}
                   <div style={{marginLeft:16, display:'flex', alignItems:'center', gap:4, background:'white', borderRadius:6, padding:'4px 8px', border:'1px solid #E5E7EB'}}>
-                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.max(0.08, Math.round((z - 0.03)*1000)/1000))}>-</button>
-                    <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(zoom*1000)/10}%</span>
-                    <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.min(0.5, Math.round((z + 0.03)*1000)/1000))}>+</button>
-                    <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setZoom(0.164)}>Reset</button>
-                    <button className={`btn btn-sm ${showTemplate ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTemplate(t => !t)}>{showTemplate ? 'Overlays ON' : 'Overlays'}</button>
+                    {useModular ? (
+                      <React.Fragment>
+                        <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setModularZoom(z => Math.max(0.2, Math.round((z - 0.05)*100)/100))}>-</button>
+                        <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(modularZoom*100)}%</span>
+                        <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setModularZoom(z => Math.min(1.5, Math.round((z + 0.05)*100)/100))}>+</button>
+                        <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setModularZoom(0.55)}>Reset</button>
+                        <button className={`btn btn-sm ${showTrim ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTrim(t => !t)}>{showTrim ? 'Trim ON' : 'Trim'}</button>
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.max(0.08, Math.round((z - 0.03)*1000)/1000))}>-</button>
+                        <span style={{fontSize:12, fontWeight:600, minWidth:42, textAlign:'center', color:'var(--bni-grey)'}}>{Math.round(zoom*1000)/10}%</span>
+                        <button className="btn btn-ghost" style={{padding:'2px 8px', fontSize:16, lineHeight:1, fontWeight:700}} onClick={() => setZoom(z => Math.min(0.5, Math.round((z + 0.03)*1000)/1000))}>+</button>
+                        <button className="btn btn-ghost btn-sm" style={{padding:'2px 8px', fontSize:11}} onClick={() => setZoom(0.164)}>Reset</button>
+                        <button className={`btn btn-sm ${showTemplate ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8}} onClick={() => setShowTemplate(t => !t)}>{showTemplate ? 'Overlays ON' : 'Overlays'}</button>
+                      </React.Fragment>
+                    )}
+                    <button className={`btn btn-sm ${useModular ? 'btn-primary' : 'btn-ghost'}`} style={{padding:'2px 10px', fontSize:11, marginLeft:8, fontWeight:700}} onClick={() => setUseModular(m => !m)} title="Switch between legacy renderer and modular block renderer">{useModular ? 'Modular' : 'Legacy'}</button>
                   </div>
                 </div>
 
+                {useModular ? (
+                  /* ========== MODULAR RENDERER ========== */
+                  (() => {
+                    const tpl = makeDefaultTemplate();
+                    const content = { frontCover, backPage, referrals };
+                    const chapter = { id: sheet.chapter_id, name: sheet.chapter_name, meeting_location: sheet.meeting_location, meeting_address: sheet.shipping_address };
+                    return (
+                      <ModularRenderer
+                        template={tpl}
+                        content={content}
+                        sheet={sheet}
+                        chapter={chapter}
+                        members={members}
+                        zoom={printing ? 1 : modularZoom}
+                        showTrim={!printing && showTrim}
+                        editing={!printing}
+                      />
+                    );
+                  })()
+                ) : (
                 <div className="ts-canvas">
 
                   {/* ========== FRONT PAGE ========== */}
@@ -1609,9 +2741,9 @@
                   {(activePage === 'inside_right' || printing) && (
                     <div className="ts-scale-wrap" style={{width:wrapW, height:wrapH}}>
                       <div className="ts-a4" style={{transform:`scale(${zoom})`, position:'relative', ...pageBgStyle('inside_right')}}>
-                        {/* Member table positioned over PDF table area - InDesign: left:152 top:443 w:2402 h:2992
+                        {/* Member table - matched to Inside Left: left:152 top:443 w:2408 h:3021
                              Column widths from IDML: #=77px, Member=740px, Business=375px, Category=426px, Request=744px */}
-                        <div style={{position:'absolute', top:443, left:152, width:2402, height:2992, display:'flex', flexDirection:'column'}}>
+                        <div style={{position:'absolute', top:443, left:152, width:2408, height:3021, display:'flex', flexDirection:'column'}}>
                           <table className="ts-ref" style={{flex:1, borderCollapse:'collapse', width:'100%', fontSize:28, tableLayout:'fixed'}}>
                             <colgroup>
                               <col style={{width:77}} />
@@ -1693,6 +2825,7 @@
                   )}
 
                 </div>
+                )}
               </div>
 
               {/* RIGHT PANEL - EDITOR */}
