@@ -476,9 +476,11 @@
     .tsm-feat__company { font-size: 3.4mm; color:#1a1a1a; margin-left: 1mm; }
     .tsm-feat__mic { position:absolute; right: 2mm; top: 50%; transform: translateY(-50%); width: 18mm; height: 18mm; background: no-repeat center/contain; }
 
-    /* === NEXT-WEEK PRESENTER === Light lavender panel (PDF target color #F1E6F4) */
-    .tsm-next { background: #F1E6F4; padding: 2.4mm 3mm; flex:1; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; min-height:0; }
-    .tsm-next__label { font-size: 3mm; color:#444; margin-bottom: 0.5mm; }
+    /* === NEXT-WEEK PRESENTER === Light lavender panel (PDF target color #F1E6F4)
+       Title styling matches Feature Presentation so the two panels read as a pair. */
+    .tsm-next { background: #F1E6F4; padding: 2.4mm 3mm; flex:1; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; min-height:0; gap: 0.6mm; }
+    .tsm-next__label { font-weight: 800; font-size: 4.4mm; color:#1a1a1a; line-height: 1.1; }
+    .tsm-next__sub { font-size: 2.7mm; font-style: italic; color:#444; }
     .tsm-next__person { font-weight: 700; font-size: 4.4mm; color: var(--bni-red); }
     .tsm-next__company { font-size: 3.4mm; color:#1a1a1a; margin-left: 1mm; display:inline; }
 
@@ -1839,9 +1841,9 @@
       const presenter = content.backPage.feature_presenter || ph.feature_presenter || '';
       const company = content.backPage.feature_company || ph.feature_company || '';
       return (
-        <div className="tsm-feat" style={{flex:1}}>
+        <div className="tsm-feat">
           <div className="tsm-feat__title">Feature Presentation</div>
-          <div className="tsm-feat__sub">Learn more about</div>
+          <div className="tsm-feat__sub">Learn more about:</div>
           <div>
             <span className="tsm-feat__person">{presenter}</span>
             {company && <span className="tsm-feat__company"> {company}</span>}
@@ -1857,7 +1859,7 @@
       const company = content.backPage.next_company || ph.next_company || '';
       return (
         <div className="tsm-next">
-          <div className="tsm-next__label">Next weeks presentation:</div>
+          <div className="tsm-next__label">Next weeks presentation</div>
           <div>
             <span className="tsm-next__person">{presenter}</span>
             {company && <span className="tsm-next__company"> {company}</span>}
@@ -1919,16 +1921,23 @@
       const lineColor = '#9a9a9a';
       // Render lines as a CSS gradient so they always fit precisely inside the body.
       const lineBg = `repeating-linear-gradient(to bottom, transparent 0 ${spacing - lineThickness}mm, ${lineColor} ${spacing - lineThickness}mm ${spacing}mm)`;
+      // Header is optional: a lined block with no title renders pure writing rules,
+      // useful as a "continuation" area below a stamped panel like Feature Presentation.
+      const hasHeader = !!(fields.title || fields.subLine || fields.subtitle);
       return (
         <div className="tsm-lined">
-          <div className="tsm-lined__head">
-            <div className="tsm-lined__title-row">
-              <span className="tsm-lined__title">{fields.title || 'Notes'}</span>
-              {fields.subtitle && !fields.subLine && <span className="tsm-lined__sub">{fields.subtitle}</span>}
+          {hasHeader && (
+            <div className="tsm-lined__head">
+              {fields.title && (
+                <div className="tsm-lined__title-row">
+                  <span className="tsm-lined__title">{fields.title}</span>
+                  {fields.subtitle && !fields.subLine && <span className="tsm-lined__sub">{fields.subtitle}</span>}
+                </div>
+              )}
+              {fields.subLine && <div className="tsm-lined__sub-line">{fields.subLine}</div>}
+              {fields.subLine && fields.subtitle && <div className="tsm-lined__sub">{fields.subtitle}</div>}
             </div>
-            {fields.subLine && <div className="tsm-lined__sub-line">{fields.subLine}</div>}
-            {fields.subLine && fields.subtitle && <div className="tsm-lined__sub">{fields.subtitle}</div>}
-          </div>
+          )}
           <div className="tsm-lined__body" style={{ background: lineBg }} />
         </div>
       );
@@ -2395,11 +2404,14 @@
               { id: 'pod1', type: 'podcasts', frame:{x:6,y:32,w:115,h:54}, fields:{ title:'BNI Podcasts', tiles: TSM_DEFAULT_PODCASTS } },
               { id: 'up1', type: 'upcoming_dates', frame:{x:6,y:90,w:115,h:42}, fields:{ title:'Upcoming Dates', slots:6 } },
               { id: 'tgt1', type: 'targeting_occupations', frame:{x:6,y:136,w:115,h:60}, fields:{ title:'Targeting Occupations', defaults: TSM_DEFAULT_TARGETING, slots:7 } },
-              // Right column - resized so I Have has plenty of writing lines
-              { id: 'edu1', type: 'lined', frame:{x:125,y:32,w:79,h:36}, fields:{ title:'Education Notes', subtitle:'When you learn more, you earn more.', lineSpacingMm: 7 } },
-              { id: 'feat1', type: 'feature_presenter', frame:{x:125,y:70,w:79,h:28}, fields:{ micUrl: 'images/mic.png' } },
-              { id: 'nxt1', type: 'next_presenter', frame:{x:125,y:100,w:79,h:22}, fields:{} },
-              { id: 'ihave1', type: 'lined', frame:{x:125,y:124,w:79,h:74}, fields:{ title:'I Have', subLine:'Refer to your BNI Connect App', subtitle:'Members Please enter your weekly STATS into the BNI Connect app', lineSpacingMm: 7 } },
+              // Right column - structured to match the PDF: each highlight panel is followed
+              // by a 4-line writing strip. I Have is a single continuous lined area.
+              { id: 'edu1', type: 'lined', frame:{x:125,y:32,w:79,h:32}, fields:{ title:'Education Notes', subtitle:'When you learn more, you earn more.', lineSpacingMm: 6 } },
+              { id: 'feat1', type: 'feature_presenter', frame:{x:125,y:66,w:79,h:24}, fields:{ micUrl: 'images/mic.png' } },
+              { id: 'feat_lines', type: 'lined', frame:{x:125,y:92,w:79,h:26}, fields:{ lineSpacingMm: 6 } },
+              { id: 'nxt1', type: 'next_presenter', frame:{x:125,y:120,w:79,h:24}, fields:{} },
+              { id: 'next_lines', type: 'lined', frame:{x:125,y:146,w:79,h:26}, fields:{ lineSpacingMm: 6 } },
+              { id: 'ihave1', type: 'lined', frame:{x:125,y:174,w:79,h:110}, fields:{ title:'I Have', subLine:'Refer to your BNI Connect App', subtitle:'Members Please enter your weekly STATS into the BNI Connect app', lineSpacingMm: 6 } },
               // Bottom row: Scan QR + VP Report
               { id: 'scan1', type: 'scan_qr', frame:{x:6,y:200,w:55,h:84}, fields:{ title:'Scan here for our Facebook page' } },
               { id: 'vp1', type: 'vp_report', frame:{x:64,y:200,w:140,h:84}, fields:{ title:'Vice President Report', kpis: TSM_DEFAULT_VP_KPIS, avgLabel: '2026 per wk\naverage' } },
