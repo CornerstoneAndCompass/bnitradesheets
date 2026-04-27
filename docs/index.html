@@ -1939,7 +1939,8 @@
     }
 
     function BlkScanQR({ fields, content, ctx }) {
-      const qr = fields.qrImage || '';
+      // Order of resolution: per-sheet content (backPage) -> per-template field default -> fallback pattern
+      const qr = content.backPage.scan_qr_image || fields.qrImage || '';
       return (
         <div className="tsm-scan">
           <div className="tsm-scan__title">{fields.title || 'Scan here for our Facebook page'}</div>
@@ -3078,13 +3079,45 @@
                   if (!sel) return null;
                   const f = tsmResolveFrame(sel.block);
                   const setF = (k, v) => updateBlockFrame(sel.page.id, sel.block.id, { ...f, [k]: parseFloat(v) || 0 });
+
+                  // Image upload helper - reads file as base64 data URL, calls setter with the URL.
+                  // Stored in content (frontCover/backPage) so uploads persist with the saved sheet.
+                  const readImageFile = (file, setter) => {
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setter(ev.target.result);
+                    reader.readAsDataURL(file);
+                  };
+
+                  // Image-field config per block type:
+                  //   contentKey: which top-level slice to write to ('frontCover' or 'backPage')
+                  //   key: property name on that slice
+                  //   label: UI label
+                  const imageFieldSpecs = {
+                    visitor_resources: [{ contentKey: 'backPage', key: 'qr_image', label: 'Visitor QR Code' }],
+                    scan_qr:           [{ contentKey: 'backPage', key: 'scan_qr_image', label: 'Facebook QR Code' }],
+                    photo_caption:     [{ contentKey: 'frontCover', key: 'photo_url', label: 'Chapter Photo' }],
+                  };
+                  const imageSpecs = imageFieldSpecs[sel.block.type] || [];
+
+                  // Setter that writes into the right content slice
+                  const writeContent = (contentKey, key, value) => {
+                    if (contentKey === 'frontCover') setFrontCover(prev => ({ ...prev, [key]: value }));
+                    else if (contentKey === 'backPage') setBackPage(prev => ({ ...prev, [key]: value }));
+                  };
+                  const readContent = (contentKey, key) => {
+                    if (contentKey === 'frontCover') return frontCover[key] || '';
+                    if (contentKey === 'backPage') return backPage[key] || '';
+                    return '';
+                  };
+
                   return (
                     <div style={{padding:14, borderBottom:'1px solid #E5E7EB'}}>
                       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10}}>
                         <h4 style={{fontSize:13, fontWeight:700}}>{(TSM_BLOCKS[sel.block.type] && TSM_BLOCKS[sel.block.type].label) || sel.block.type}</h4>
                         <button className="btn btn-ghost btn-sm" onClick={() => setSelectedBlockId(null)} style={{padding:4,color:'#666'}}>×</button>
                       </div>
-                      <div style={{fontSize:11, color:'#666', marginBottom:6}}>Page: {sel.page.id}{sel.block.bleed ? ` · bleed: ${sel.block.bleed}` : ''}</div>
+                      <div style={{fontSize:11, color:'#666', marginBottom:6}}>Page: {sel.page.id}{sel.block.bleed ? ` · bleed: ${typeof sel.block.bleed === 'object' ? Object.keys(sel.block.bleed).filter(k => sel.block.bleed[k]).join('+') : sel.block.bleed}` : ''}</div>
                       <div className="grid-2" style={{gap:8, marginBottom:8}}>
                         <div className="form-group" style={{marginBottom:0}}>
                           <label style={{fontSize:11}}>X (mm)</label>
@@ -3128,7 +3161,36 @@
                           <input value={sel.block.fields.text || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'text', e.target.value)} placeholder="Welcome to BNI Royals" style={{padding:'5px 8px', fontSize:12}} />
                         </div>
                       )}
-                      <div style={{fontSize:11, color:'#888', marginTop:6}}>Drag the block on canvas to move. Drag the corner handles to resize. Snap step set in toolbar.</div>
+                      {sel.block.type === 'visitor_resources' && (
+                        <div className="form-group" style={{marginBottom:8}}>
+                          <label style={{fontSize:11}}>Panel message</label>
+                          <textarea value={sel.block.fields.msg || ''} onChange={e => updateBlockField(sel.page.id, sel.block.id, 'msg', e.target.value)} style={{padding:'5px 8px', fontSize:12, minHeight:50, fontFamily:'inherit'}} />
+                        </div>
+                      )}
+                      {/* Image upload(s) for blocks that take images */}
+                      {imageSpecs.map((spec, si) => {
+                        const url = readContent(spec.contentKey, spec.key);
+                        const inputId = `tsm-img-upload-${sel.block.id}-${si}`;
+                        return (
+                          <div key={spec.key} style={{background:'#F9FAFB', border:'1px solid #E5E7EB', borderRadius:6, padding:8, marginBottom:8}}>
+                            <div style={{fontSize:11, fontWeight:600, marginBottom:6}}>{spec.label}</div>
+                            <div style={{display:'flex', alignItems:'center', gap:8}}>
+                              {url ? (
+                                <img src={url} alt={spec.label} style={{width:48, height:48, objectFit:'contain', border:'1px solid #ddd', borderRadius:4, background:'white'}} />
+                              ) : (
+                                <div style={{width:48, height:48, background:'#fff', border:'1px dashed #ccc', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'#999'}}>None</div>
+                              )}
+                              <div style={{flex:1}}>
+                                <input type="file" accept="image/*" id={inputId} style={{display:'none'}} onChange={e => readImageFile(e.target.files && e.target.files[0], (dataUrl) => writeContent(spec.contentKey, spec.key, dataUrl))} />
+                                <button className="btn btn-primary btn-sm" style={{fontSize:11, padding:'5px 10px'}} onClick={() => document.getElementById(inputId).click()}>{url ? 'Replace' : 'Upload'}</button>
+                                {url && <button className="btn btn-ghost btn-sm" style={{fontSize:11, padding:'5px 8px', marginLeft:4, color:'#EF4444'}} onClick={() => writeContent(spec.contentKey, spec.key, '')}>Remove</button>}
+                              </div>
+                            </div>
+                            <div style={{fontSize:10, color:'#888', marginTop:6}}>PNG or JPG. Saved with the sheet on Save All.</div>
+                          </div>
+                        );
+                      })}
+                      <div style={{fontSize:11, color:'#888', marginTop:6}}>{sel.page.locked ? 'This page is auto-layout · drag/resize disabled.' : 'Drag the block on canvas to move. Drag the corner handles to resize. Snap step set in toolbar.'}</div>
                     </div>
                   );
                 })()}
