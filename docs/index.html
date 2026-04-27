@@ -705,8 +705,32 @@
       nextId: {users:26, chapters:2, tradesheets:2, shipping:1}
     };
 
-    // Deep clone seed data into working store
-    const store = JSON.parse(JSON.stringify(DEMO_DATA));
+    // Deep clone seed data into working store, then merge any localStorage-persisted state on top
+    // so user edits survive a full page reload (since this is a static GitHub Pages demo).
+    const STORE_KEY = 'bni_tradesheet_store_v2';
+    let store;
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      const persisted = raw ? JSON.parse(raw) : null;
+      if (persisted && persisted.tradesheets && persisted.users && persisted.chapters) {
+        store = persisted;
+      } else {
+        store = JSON.parse(JSON.stringify(DEMO_DATA));
+      }
+    } catch (e) {
+      store = JSON.parse(JSON.stringify(DEMO_DATA));
+    }
+    const persistStore = (() => {
+      let pending = null;
+      return () => {
+        if (pending) clearTimeout(pending);
+        pending = setTimeout(() => {
+          try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { console.warn('Persist failed', e); }
+        }, 200);
+      };
+    })();
+    // Expose a quick reset for debugging
+    window.bniResetStore = () => { localStorage.removeItem(STORE_KEY); location.reload(); };
 
     const api = {
       token: null,
@@ -748,6 +772,7 @@
           if (parts.length === 1 && method === 'POST') {
             const ch = {id: store.nextId.chapters++, ...body, member_count: 0, status: 'active'};
             store.chapters.push(ch);
+            persistStore();
             return {id: ch.id};
           }
           if (parts.length === 2 && method === 'GET') {
@@ -758,6 +783,7 @@
           if (parts.length === 2 && method === 'PUT') {
             const ch = store.chapters.find(c => c.id === parseInt(parts[1]));
             Object.assign(ch, body);
+            persistStore();
             return {success: true};
           }
         }
@@ -773,15 +799,18 @@
           if (parts.length === 1 && method === 'POST') {
             const u = {id: store.nextId.users++, ...body, role: body.role || 'member'};
             store.users.push(u);
+            persistStore();
             return {id: u.id};
           }
           if (parts.length === 2 && method === 'PUT') {
             const u = store.users.find(u => u.id === parseInt(parts[1]));
             if (u) Object.assign(u, body);
+            persistStore();
             return {success: true};
           }
           if (parts.length === 2 && method === 'DELETE') {
             store.users = store.users.filter(u => u.id !== parseInt(parts[1]));
+            persistStore();
             return {success: true};
           }
         }
@@ -800,6 +829,7 @@
             const ch = store.chapters.find(c => c.id === body.chapter_id);
             const ts = {id: store.nextId.tradesheets++, ...body, chapter_name: ch?.name, status:'draft', front_cover:'{}', back_page:'{}', referrals:[], notices:[], created_at: new Date().toISOString().split('T')[0], updated_at: new Date().toISOString().split('T')[0], submitted_by_name:'Demo User'};
             store.tradesheets.push(ts);
+            persistStore();
             return {id: ts.id};
           }
           if (parts.length === 2 && method === 'GET') {
@@ -814,6 +844,7 @@
             if (body.status !== undefined) ts.status = body.status;
             if (body.front_cover !== undefined) ts.front_cover = body.front_cover;
             if (body.back_page !== undefined) ts.back_page = body.back_page;
+            if (body.template !== undefined) ts.template = body.template;
             if (body.print_copies !== undefined) ts.print_copies = body.print_copies;
             if (body.shipping_address !== undefined) ts.shipping_address = body.shipping_address;
             if (body.referrals !== undefined) {
@@ -823,12 +854,14 @@
               });
             }
             ts.updated_at = new Date().toISOString().split('T')[0];
+            persistStore();
             return {success: true};
           }
           // Bulk referrals
           if (parts.length === 3 && parts[2] === 'referrals' && method === 'PUT') {
             const ts = store.tradesheets.find(t => t.id === parseInt(parts[1]));
             if (ts && body.referrals) ts.referrals = body.referrals;
+            persistStore();
             return {success: true};
           }
         }
@@ -839,6 +872,7 @@
           if (parts.length === 2 && method === 'PUT') {
             const o = store.shipping.find(s => s.id === parseInt(parts[1]));
             if (o) Object.assign(o, body);
+            persistStore();
             return {success: true};
           }
         }
@@ -2429,6 +2463,11 @@
         setReferrals(data.referrals || []);
         try { setFrontCover(typeof data.front_cover === 'string' ? JSON.parse(data.front_cover) : data.front_cover || {}); } catch(e) { setFrontCover({}); }
         try { setBackPage(typeof data.back_page === 'string' ? JSON.parse(data.back_page) : data.back_page || {}); } catch(e) { setBackPage({}); }
+        // Hydrate template from saved data if present, otherwise keep current state
+        try {
+          const tpl = typeof data.template === 'string' ? JSON.parse(data.template) : data.template;
+          if (tpl && Array.isArray(tpl.pages) && tpl.pages.length) setTemplate(tpl);
+        } catch(e) { /* ignore parse error, keep current template */ }
         if (data.chapter_id) {
           const m = await api.get(`/members?chapter_id=${data.chapter_id}`);
           setMembers(m);
@@ -2449,7 +2488,12 @@
       const saveAll = async () => {
         setSaving(true);
         try {
-          await api.put(`/tradesheets/${sheetId}`, { front_cover: JSON.stringify(frontCover), back_page: JSON.stringify(backPage), referrals });
+          await api.put(`/tradesheets/${sheetId}`, {
+            front_cover: JSON.stringify(frontCover),
+            back_page: JSON.stringify(backPage),
+            referrals,
+            template: JSON.stringify(template),
+          });
           await loadSheet();
         } catch(e) { console.error(e); }
         setSaving(false);
