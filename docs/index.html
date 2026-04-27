@@ -2855,12 +2855,17 @@
                           <button
                             className="btn btn-sm btn-ghost"
                             style={{padding:'2px 8px', fontSize:11, color:'#A81828', borderLeft:'1px solid #E5E7EB', marginLeft:4}}
-                            title="Discard your custom layout edits and reload the latest default template"
-                            onClick={() => {
-                              if (window.confirm('Reset this trade sheet to the latest default template? Your block frame edits will be discarded. Member list and content stay.')) {
-                                setTemplate(makeDefaultTemplate());
-                                setSelectedBlockId(null);
-                              }
+                            title="Discard your custom layout edits and reload the latest default template (auto-saves)"
+                            onClick={async () => {
+                              if (!window.confirm('Reset this trade sheet to the latest default template? Your block frame edits will be discarded. Member list and content stay.')) return;
+                              const fresh = makeDefaultTemplate();
+                              setTemplate(fresh);
+                              setSelectedBlockId(null);
+                              // Persist immediately so a reload picks up the new defaults
+                              // rather than the old saved template still in localStorage.
+                              try {
+                                await api.put(`/tradesheets/${sheetId}`, { template: JSON.stringify(fresh) });
+                              } catch (e) { console.error('Reset persist failed', e); }
                             }}
                           >Reset Template</button>
                         </React.Fragment>}
