@@ -468,15 +468,16 @@
     .tsm-dates__date { color:#1a1a1a; }
     .tsm-dates__event { color:#1a1a1a; }
 
-    /* === FEATURE PRESENTER === */
-    .tsm-feat { background: #F1F6ED; padding: 2mm 3mm; height: 100%; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; gap: 0.6mm; position: relative; }
-    .tsm-feat__title { font-weight: 800; font-size: 4.4mm; color: #1a1a1a; }
-    .tsm-feat__sub { font-size: 2.7mm; font-style: italic; color:#333; }
+    /* === FEATURE PRESENTER === Light mint panel (PDF target color #ECF6E5) */
+    .tsm-feat { background: #ECF6E5; padding: 2.4mm 3mm; flex:1; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; gap: 0.6mm; position: relative; min-height:0; padding-right: 22mm; }
+    .tsm-feat__title { font-weight: 800; font-size: 4.4mm; color: #1a1a1a; line-height: 1.1; }
+    .tsm-feat__sub { font-size: 2.7mm; font-style: italic; color:#444; }
     .tsm-feat__person { font-weight: 700; font-size: 4.4mm; color: var(--bni-red); }
-    .tsm-feat__company { font-size: 3.4mm; color:#1a1a1a; }
-    .tsm-feat__mic { position:absolute; right: 2mm; top: 50%; transform: translateY(-50%); width: 22mm; height: 22mm; opacity: 0.85; background: no-repeat center/contain; }
+    .tsm-feat__company { font-size: 3.4mm; color:#1a1a1a; margin-left: 1mm; }
+    .tsm-feat__mic { position:absolute; right: 2mm; top: 50%; transform: translateY(-50%); width: 18mm; height: 18mm; background: no-repeat center/contain; }
 
-    .tsm-next { background: #F3ECF6; padding: 2mm 3mm; flex:1; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; min-height:0; }
+    /* === NEXT-WEEK PRESENTER === Light lavender panel (PDF target color #F1E6F4) */
+    .tsm-next { background: #F1E6F4; padding: 2.4mm 3mm; flex:1; display:flex; flex-direction:column; justify-content:center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; min-height:0; }
     .tsm-next__label { font-size: 3mm; color:#444; margin-bottom: 0.5mm; }
     .tsm-next__person { font-weight: 700; font-size: 4.4mm; color: var(--bni-red); }
     .tsm-next__company { font-size: 3.4mm; color:#1a1a1a; margin-left: 1mm; display:inline; }
@@ -501,10 +502,11 @@
 
     /* === LINED WRITING AREA === Education Notes / I Have */
     .tsm-lined { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width:100%; flex:1; display:flex; flex-direction:column; min-height:0; }
-    .tsm-lined__head { padding: 0 0 1mm 0; }
-    .tsm-lined__title { color: var(--bni-red); font-weight: 800; font-size: 6.2mm; line-height: 1.05; display:inline-block; letter-spacing: -0.05mm; }
-    .tsm-lined__sub-line { font-weight: 700; font-size: 3.6mm; color: var(--bni-red); margin-top: 0.4mm; }
-    .tsm-lined__sub { font-style: italic; font-size: 3mm; color:#666; }
+    .tsm-lined__head { padding: 0 0 1.4mm 0; flex: 0 0 auto; }
+    .tsm-lined__title-row { display:flex; align-items:baseline; flex-wrap:wrap; gap: 0 2mm; line-height: 1.05; }
+    .tsm-lined__title { color: var(--bni-red); font-weight: 800; font-size: 6.2mm; letter-spacing: -0.05mm; flex: 0 0 auto; }
+    .tsm-lined__sub-line { font-weight: 700; font-size: 3.6mm; color: var(--bni-red); margin-top: 0.6mm; line-height: 1.15; }
+    .tsm-lined__sub { font-style: italic; font-size: 2.7mm; color:#666; line-height: 1.2; }
     .tsm-lined__body { flex:1; min-height:0; }
 
     /* === VP REPORT === Vice President Report KPI grid (back page) */
@@ -1912,7 +1914,7 @@
     }
 
     function BlkLined({ fields, content, ctx }) {
-      const spacing = fields.lineSpacingMm || 7; // mm between lines, default 7mm = comfortable for handwriting
+      const spacing = fields.lineSpacingMm || 6; // mm between lines; 6mm gives ~5 lines per 30mm body
       const lineThickness = 0.2; // mm
       const lineColor = '#9a9a9a';
       // Render lines as a CSS gradient so they always fit precisely inside the body.
@@ -1920,12 +1922,12 @@
       return (
         <div className="tsm-lined">
           <div className="tsm-lined__head">
-            <div>
+            <div className="tsm-lined__title-row">
               <span className="tsm-lined__title">{fields.title || 'Notes'}</span>
-              {fields.subtitle && <span className="tsm-lined__sub" style={{marginLeft:'2mm'}}>{fields.subtitle}</span>}
+              {fields.subtitle && !fields.subLine && <span className="tsm-lined__sub">{fields.subtitle}</span>}
             </div>
             {fields.subLine && <div className="tsm-lined__sub-line">{fields.subLine}</div>}
-            {fields.note && <div className="tsm-lined__sub" style={{marginTop:'0.3mm'}}>{fields.note}</div>}
+            {fields.subLine && fields.subtitle && <div className="tsm-lined__sub">{fields.subtitle}</div>}
           </div>
           <div className="tsm-lined__body" style={{ background: lineBg }} />
         </div>
@@ -2838,6 +2840,17 @@
                             <option value={5}>5mm</option>
                             <option value={10}>10mm</option>
                           </select>
+                          <button
+                            className="btn btn-sm btn-ghost"
+                            style={{padding:'2px 8px', fontSize:11, color:'#A81828', borderLeft:'1px solid #E5E7EB', marginLeft:4}}
+                            title="Discard your custom layout edits and reload the latest default template"
+                            onClick={() => {
+                              if (window.confirm('Reset this trade sheet to the latest default template? Your block frame edits will be discarded. Member list and content stay.')) {
+                                setTemplate(makeDefaultTemplate());
+                                setSelectedBlockId(null);
+                              }
+                            }}
+                          >Reset Template</button>
                         </React.Fragment>}
                       </React.Fragment>
                     ) : (
